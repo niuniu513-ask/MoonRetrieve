@@ -1,0 +1,110 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "niuniu513-ask/MoonSearch"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/json",
+}
+
+// Values
+pub fn cosine(Array[Double], Array[Double]) -> Double
+
+pub fn default_stopwords() -> Array[String]
+
+pub fn rrf_fuse(Array[ScoredDoc], Array[ScoredDoc], k? : Int, top_k? : Int) -> Array[ScoredDoc]
+
+// Errors
+
+// Types and methods
+pub struct Chunk {
+  doc_id : String
+  index : Int
+  text : String
+} derive(Eq, ToJson, @debug.Debug, @json.FromJson)
+pub fn Chunk::new(String, Int, String) -> Self
+
+pub struct Chunker {
+  max_chars : Int
+  overlap : Int
+} derive(ToJson, @json.FromJson)
+pub fn Chunker::chunk(Self, String, String) -> Array[Chunk]
+pub fn Chunker::new(max_chars? : Int, overlap? : Int) -> Self
+
+pub struct ContextBuilder {
+  max_tokens : Int
+  tokenizer : Tokenizer
+} derive(ToJson, @json.FromJson)
+pub fn ContextBuilder::build(Self, String, Array[SearchResult]) -> String
+pub fn ContextBuilder::new(max_tokens? : Int, tokenizer? : Tokenizer) -> Self
+
+pub struct Engine {
+  chunker : Chunker
+  index : SearchIndex
+} derive(ToJson, @json.FromJson)
+pub fn Engine::add_document(Self, String, String) -> Unit
+pub fn Engine::add_documents(Self, Array[(String, String)]) -> Unit
+pub fn Engine::count(Self) -> Int
+pub fn Engine::new(chunker? : Chunker, index? : SearchIndex) -> Self
+pub fn Engine::save(Self) -> String
+pub fn Engine::search(Self, String, top_k? : Int) -> Array[SearchResult]
+pub fn Engine::try_load(String) -> Result[Self, String]
+
+pub struct Posting {
+  doc_id : Int
+  tf : Int
+} derive(Eq, ToJson, @debug.Debug, @json.FromJson)
+
+pub struct ScoredDoc {
+  id : String
+  score : Double
+} derive(Eq, ToJson, @debug.Debug, @json.FromJson)
+pub fn ScoredDoc::new(String, Double) -> Self
+
+pub struct SearchIndex {
+  ids : Array[String]
+  texts : Array[String]
+  lens : Array[Int]
+  postings : Map[String, Array[Posting]]
+  mut total_docs : Int
+  mut sum_len : Int
+  mut avg_dl : Double
+  k1 : Double
+  b : Double
+  tokenizer : Tokenizer
+} derive(ToJson, @json.FromJson)
+pub fn SearchIndex::add(Self, String, String) -> Unit
+pub fn SearchIndex::count(Self) -> Int
+pub fn SearchIndex::new(k1? : Double, b? : Double, tokenizer? : Tokenizer) -> Self
+pub fn SearchIndex::save(Self) -> String
+pub fn SearchIndex::search(Self, String, top_k? : Int) -> Array[SearchResult]
+pub fn SearchIndex::try_load(String) -> Result[Self, String]
+
+pub struct SearchResult {
+  doc_id : String
+  score : Double
+  text : String
+} derive(Eq, ToJson, @debug.Debug, @json.FromJson)
+pub fn SearchResult::new(String, Double, String) -> Self
+
+pub struct Tokenizer {
+  min_token_len : Int
+  bigram_cjk : Bool
+  stem_english : Bool
+  stopwords : Array[String]
+} derive(ToJson, @json.FromJson)
+pub fn Tokenizer::estimate_tokens(Self, String) -> Int
+pub fn Tokenizer::new(min_token_len? : Int, bigram_cjk? : Bool, stem_english? : Bool, stopwords? : Array[String]) -> Self
+pub fn Tokenizer::tokenize(Self, String) -> Array[String]
+
+pub struct VectorIndex {
+  items : Array[ScoredDoc]
+  vectors : Array[Array[Double]]
+} derive(ToJson, @json.FromJson)
+pub fn VectorIndex::add(Self, String, Array[Double]) -> Unit
+pub fn VectorIndex::count(Self) -> Int
+pub fn VectorIndex::new() -> Self
+pub fn VectorIndex::search(Self, Array[Double], top_k? : Int) -> Array[ScoredDoc]
+
+// Type aliases
+
+// Traits

@@ -1,0 +1,9 @@
+import {
+  "niuniu513-ask/MoonSearch" @lib,
+  "moonbitlang/async",
+  "moonbitlang/async/fs",
+  "moonbitlang/core/env",
+  "moonbitlang/core/string",
+}
+
+pkgtype(kind: "executable")
