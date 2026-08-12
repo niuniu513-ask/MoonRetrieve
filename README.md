@@ -67,7 +67,7 @@ context.mbt          LLM 上下文组装
 engine.mbt           一站式引擎
 cmd/main/            CLI
 examples/notes/      示例文档
-docs/申报书.md       比赛项目申报书（模板）
+docs/申报书.md       比赛项目申报书
 ```
 
 ## 测试与构建
