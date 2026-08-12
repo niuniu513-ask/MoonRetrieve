@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "niuniu513-ask/MoonSearch"
+package "niuniu513-ask/MoonRetrieve"
 
 import {
   "moonbitlang/core/debug",

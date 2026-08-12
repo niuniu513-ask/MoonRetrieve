@@ -1,4 +1,4 @@
-// MoonSearch: 纯 MoonBit 实现的本地全文检索与 RAG 检索库。
+// MoonRetrieve: 纯 MoonBit 零 FFI 的本地全文检索与 RAG 检索库。
 //
 // 核心 API 分布在以下文件中：
 // - tokenizer.mbt  分词（中英文、N-gram、停用词、可选词干化）

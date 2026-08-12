@@ -1,5 +1,5 @@
 import {
-  "niuniu513-ask/MoonSearch" @lib,
+  "niuniu513-ask/MoonRetrieve" @lib,
   "moonbitlang/async",
   "moonbitlang/async/fs",
   "moonbitlang/core/env",

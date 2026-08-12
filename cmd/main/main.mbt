@@ -1,5 +1,5 @@
 ///|
-/// MoonSearch CLI。
+/// MoonRetrieve CLI。
 ///
 /// 用法：
 ///   moon run cmd/main -- index <文件或目录> [输出.json]
@@ -31,7 +31,7 @@ async fn main {
 
 ///|
 fn usage() -> Unit {
-  println("MoonSearch CLI")
+  println("MoonRetrieve CLI")
   println(
     "  index <path> [output.json]        建索引（支持 .md/.txt 文件或目录）",
   )

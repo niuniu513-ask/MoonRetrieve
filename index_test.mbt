@@ -1,6 +1,6 @@
 ///|
 test "bm25 ranks matching doc first" {
-  let idx = @MoonSearch.SearchIndex::new()
+  let idx = @MoonRetrieve.SearchIndex::new()
   idx.add(
     "doc-a", "MoonBit is a programming language for cloud and edge computing",
   )
@@ -13,11 +13,11 @@ test "bm25 ranks matching doc first" {
 
 ///|
 test "save and load roundtrip" {
-  let idx = @MoonSearch.SearchIndex::new()
+  let idx = @MoonRetrieve.SearchIndex::new()
   idx.add("doc-a", "MoonBit programming language")
   idx.add("doc-b", "Banana bread recipe")
   let json = idx.save()
-  let loaded = @MoonSearch.SearchIndex::try_load(json)
+  let loaded = @MoonRetrieve.SearchIndex::try_load(json)
   match loaded {
     Ok(restored) => {
       assert_true(restored.count() == 2)
@@ -31,7 +31,7 @@ test "save and load roundtrip" {
 
 ///|
 test "invalid json load returns error" {
-  match @MoonSearch.SearchIndex::try_load("not json") {
+  match @MoonRetrieve.SearchIndex::try_load("not json") {
     Err(_) => ()
     Ok(_) => assert_true(false)
   }
