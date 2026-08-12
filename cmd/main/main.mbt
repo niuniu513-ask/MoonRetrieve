@@ -56,12 +56,7 @@ async fn run_index(args : Array[String]) -> Unit {
   let engine = @lib.Engine::new()
   let mut count = 0
   for f in files {
-    let text = @fs.read_file(f).text() catch {
-      err => {
-        println("skip \{f}: \{err.to_string()}")
-        continue
-      }
-    }
+    let text = @fs.read_file(f).text()
     engine.add_document(f, text)
     count = count + 1
     println("indexed \{f}")
@@ -108,12 +103,7 @@ async fn run_context(args : Array[String]) -> Unit {
 
 ///|
 async fn load_engine(json_path : String) -> @lib.Engine {
-  let text = @fs.read_file(json_path).text() catch {
-    err => {
-      println("Cannot read \{json_path}: \{err.to_string()}")
-      abort("load failed")
-    }
-  }
+  let text = @fs.read_file(json_path).text()
   match @lib.Engine::try_load(text) {
     Ok(engine) => engine
     Err(msg) => abort("invalid index: \{msg}")

@@ -27,10 +27,6 @@ jobs:
           moon update
       - name: Test
         run: moon test --target ${{ matrix.target }}
-        if: matrix.target == 'native'
-      - name: Test library (wasm-gc)
-        run: moon test --target wasm-gc -p niuniu513-ask/MoonSearch
-        if: matrix.target == 'wasm-gc'
       - name: Build library (wasm-gc)
         if: matrix.target == 'wasm-gc'
         run: moon build --target wasm-gc .
