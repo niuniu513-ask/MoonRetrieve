@@ -1,14 +1,16 @@
-# MoonSearch
+# MoonRetrieve
 
-纯 MoonBit 实现的本地全文检索与 RAG 检索库。文档在本地完成分词、分块、索引和检索，不需要把数据上传到云端，可编译为 WASM 在浏览器或边缘设备上运行。
+[![mooncakes.io](https://img.shields.io/badge/mooncakes.io-niuniu513--ask%2FMoonRetrieve-blue)](https://mooncakes.io/packages/niuniu513-ask/MoonRetrieve)
+[![CI](https://github.com/niuniu513-ask/MoonRetrieve/actions/workflows/ci.yml/badge.svg)](https://github.com/niuniu513-ask/MoonRetrieve/actions/workflows/ci.yml)
 
-## 创新点
+纯 MoonBit 零 FFI 的本地全文检索与 RAG（检索增强生成）检索库。文档在本地完成分词、分块、索引、检索和 LLM 上下文组装，数据不出本地；核心库可编译到 wasm / wasm-gc / js / native 多后端，适合浏览器、边缘设备与隐私敏感场景。
 
-- **本地优先的 RAG**：索引和检索全链路在本地/边缘执行，隐私友好，适合企业知识库和个人笔记。
-- **中英文混合分词**：中文按单字 + bigram 切分（单字查询也能命中），英文支持小写化、停用词与可选词干化。
-- **BM25 + 向量混合检索**：内置倒排索引与余弦向量索引，并提供 RRF 融合排序。
-- **为 LLM 而生的上下文组装**：按 token 预算把命中片段拼成带来源编号的提示词。
-- **纯 MoonBit / WASM**：核心库零 FFI，可编译到 wasm、wasm-gc、js、native 多后端。
+## 与现有 MoonBit 检索项目的差异
+
+- **不重复造“搜索引擎内核”**：区别于 [Lucius646/MoonSearch](https://github.com/Lucius646/MoonSearch)（嵌入式全文检索内核，多 Segment 持久化、Phrase/Boolean 查询），MoonRetrieve 聚焦轻量索引 + 混合检索 + RAG 上下文组装，提供 `Engine` 一站式 API 和开箱即用的 CLI。
+- **纯库、零 FFI**：区别于 [houjie/rag-mbt](https://github.com/Mr-Houjie/rag.mbt)（RAG 管线，native 侧依赖 Python/bge 嵌入与 FFI），MoonRetrieve 核心库无任何 FFI，同一套代码跑 wasm-gc / js / native，适合浏览器与受限边缘环境。
+- **内置多语言分词**：中/英/日文，中文单字 + bigram（单字查询也能命中），英文停用词与可选词干化，不依赖外部分词服务。
+- **混合检索 + 上下文组装**：BM25 倒排索引与余弦向量索引双路检索，RRF 融合排序；`ContextBuilder` 按 token 预算把命中片段拼成带来源编号的 LLM 提示词。
 
 ## 功能
 
@@ -27,7 +29,7 @@
 
 ```bash
 # 添加依赖
-moon add niuniu513-ask/MoonSearch
+moon add niuniu513-ask/MoonRetrieve
 ```
 
 库用法：
@@ -58,7 +60,7 @@ moon run cmd/main --target native -- context demo-index.json "黑客松奖励" -
 ## 项目结构
 
 ```
-MoonSearch.mbt        包说明
+MoonRetrieve.mbt      包说明
 tokenizer.mbt        分词器
 chunker.mbt          分块器
 index.mbt            BM25 倒排索引
@@ -67,13 +69,13 @@ context.mbt          LLM 上下文组装
 engine.mbt           一站式引擎
 cmd/main/            CLI
 examples/notes/      示例文档
-docs/申报书.md       比赛项目申报书
+docs/                申报书与差异化说明
 ```
 
 ## 测试与构建
 
 ```bash
-moon test        # 19 个测试
+moon test        # 19+ 个测试
 moon check
 moon build --target wasm-gc
 ```
