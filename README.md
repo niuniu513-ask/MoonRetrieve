@@ -20,8 +20,9 @@
 - 向量索引 `VectorIndex`：余弦相似度检索
 - 混合融合 `rrf_fuse`：Reciprocal Rank Fusion
 - 上下文组装 `ContextBuilder`：token 预算控制、来源标注
+- 文档删除与统计：`SearchIndex::remove` / `stats`、`Engine::remove_document` / `stats`
 - 一站式引擎 `Engine`：文档 → 分块 → 索引 → 检索
-- CLI：`index` / `query` / `context`
+- CLI：`index` / `query` / `context` / `stats`
 
 ## 快速开始
 
@@ -55,6 +56,9 @@ moon run cmd/main --target native -- query demo-index.json "MoonBit 黑客松" -
 
 # 生成 LLM 上下文
 moon run cmd/main --target native -- context demo-index.json "黑客松奖励" -k 3
+
+# 索引统计
+moon run cmd/main --target native -- stats demo-index.json
 ```
 
 ## 项目结构
@@ -69,7 +73,7 @@ context.mbt          LLM 上下文组装
 engine.mbt           一站式引擎
 cmd/main/            CLI
 examples/notes/      示例文档
-docs/                申报书、差异化说明与自查清单
+docs/                使用教程、申报书、差异化说明与自查清单
 ```
 
 ## 测试与构建
