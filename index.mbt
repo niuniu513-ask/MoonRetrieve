@@ -11,10 +11,10 @@ pub struct Posting {
 /// 支持增量添加文档、Top-K 检索，以及 JSON 序列化/反序列化。
 /// 设计为不可变更新风格：`add` 返回添加后的新索引。
 pub struct SearchIndex {
-  ids : Array[String]
-  texts : Array[String]
-  lens : Array[Int]
-  postings : Map[String, Array[Posting]]
+  mut ids : Array[String]
+  mut texts : Array[String]
+  mut lens : Array[Int]
+  mut postings : Map[String, Array[Posting]]
   mut total_docs : Int
   mut sum_len : Int
   mut avg_dl : Double
@@ -126,6 +126,82 @@ pub fn SearchIndex::try_load(json : String) -> Result[SearchIndex, String] {
 /// 当前索引中的文档/分块数量。
 pub fn SearchIndex::count(self : SearchIndex) -> Int {
   self.total_docs
+}
+
+///|
+/// 按文档 ID 删除一篇文档，返回是否删除成功。
+pub fn SearchIndex::remove(self : SearchIndex, id : String) -> Bool {
+  self.remove_if(fn(x) { x == id }) > 0
+}
+
+///|
+/// 按条件删除文档，返回删除数量。删除后内部编号重建，复杂度 O(N)。
+pub fn SearchIndex::remove_if(
+  self : SearchIndex,
+  pred : (String) -> Bool,
+) -> Int {
+  let positions : Array[Int] = []
+  for i = 0; i < self.ids.length(); i = i + 1 {
+    if pred(self.ids[i]) {
+      positions.push(i)
+    }
+  }
+  if positions.is_empty() {
+    return 0
+  }
+  let new_ids : Array[String] = []
+  let new_texts : Array[String] = []
+  let new_lens : Array[Int] = []
+  let mut new_sum = 0
+  for i = 0; i < self.ids.length(); i = i + 1 {
+    if !positions.contains(i) {
+      new_ids.push(self.ids[i])
+      new_texts.push(self.texts[i])
+      new_lens.push(self.lens[i])
+      new_sum = new_sum + self.lens[i]
+    }
+  }
+  self.ids = new_ids
+  self.texts = new_texts
+  self.lens = new_lens
+  self.total_docs = self.ids.length()
+  self.sum_len = new_sum
+  self.avg_dl = if self.total_docs > 0 {
+    new_sum.to_double() / self.total_docs.to_double()
+  } else {
+    0.0
+  }
+  self.rebuild_postings()
+  positions.length()
+}
+
+///|
+/// 返回索引统计信息。
+pub fn SearchIndex::stats(self : SearchIndex) -> IndexStats {
+  {
+    doc_count: self.total_docs,
+    term_count: self.postings.length(),
+    total_tokens: self.sum_len,
+    avg_doc_len: self.avg_dl,
+  }
+}
+
+///|
+fn SearchIndex::rebuild_postings(self : SearchIndex) -> Unit {
+  self.postings = Map([])
+  for i = 0; i < self.texts.length(); i = i + 1 {
+    let tokens = self.tokenizer.tokenize(self.texts[i])
+    let tf : Map[String, Int] = Map([])
+    for t in tokens {
+      tf[t] = tf.get_or_default(t, 0) + 1
+    }
+    for kv in tf.iter() {
+      let (term, count) = kv
+      let postings = self.postings.get_or_default(term, [])
+      postings.push({ doc_id: i, tf: count })
+      self.postings[term] = postings
+    }
+  }
 }
 
 ///|

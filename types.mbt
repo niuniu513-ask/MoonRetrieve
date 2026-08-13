@@ -39,3 +39,22 @@ pub struct ScoredDoc {
 pub fn ScoredDoc::new(id : String, score : Double) -> ScoredDoc {
   { id, score }
 }
+
+///|
+/// 索引统计信息。
+pub struct IndexStats {
+  doc_count : Int
+  term_count : Int
+  total_tokens : Int
+  avg_doc_len : Double
+} derive(ToJson, FromJson, Debug)
+
+///|
+pub fn IndexStats::new(
+  doc_count : Int,
+  term_count : Int,
+  total_tokens : Int,
+  avg_doc_len : Double,
+) -> IndexStats {
+  { doc_count, term_count, total_tokens, avg_doc_len }
+}

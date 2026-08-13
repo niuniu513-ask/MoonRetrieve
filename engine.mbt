@@ -55,6 +55,18 @@ pub fn Engine::count(self : Engine) -> Int {
 }
 
 ///|
+/// 按原始文档 ID 删除一篇文档及其全部分块，返回删除的分块数。
+pub fn Engine::remove_document(self : Engine, doc_id : String) -> Int {
+  self.index.remove_if(fn(id) { id == doc_id || id.has_prefix(doc_id + "#") })
+}
+
+///|
+/// 返回索引统计信息。
+pub fn Engine::stats(self : Engine) -> IndexStats {
+  self.index.stats()
+}
+
+///|
 /// 序列化为 JSON 字符串。
 pub fn Engine::save(self : Engine) -> String {
   @json.to_json(self).stringify()

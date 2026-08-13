@@ -5,6 +5,7 @@
 ///   moon run cmd/main -- index <文件或目录> [输出.json]
 ///   moon run cmd/main -- query <索引.json> "<查询>" [-k N]
 ///   moon run cmd/main -- context <索引.json> "<查询>" [-k N]
+///   moon run cmd/main -- stats <索引.json>
 async fn main {
   let args = @env.args()
   if args.length() < 2 {
@@ -25,6 +26,10 @@ async fn main {
       run_context(args) catch {
         err => println("Error: \{err.to_string()}")
       }
+    "stats" =>
+      run_stats(args) catch {
+        err => println("Error: \{err.to_string()}")
+      }
     _ => usage()
   }
 }
@@ -37,6 +42,7 @@ fn usage() -> Unit {
   )
   println("  query <index.json> \"<query>\" [-k N]   检索")
   println("  context <index.json> \"<query>\" [-k N] 生成 LLM 上下文")
+  println("  stats <index.json>                      索引统计")
 }
 
 ///|
@@ -99,6 +105,20 @@ async fn run_context(args : Array[String]) -> Unit {
   let results = engine.search(query, top_k~)
   let cb = @lib.ContextBuilder::new(max_tokens=800)
   println(cb.build(query, results))
+}
+
+///|
+async fn run_stats(args : Array[String]) -> Unit {
+  if args.length() < 3 {
+    usage()
+    return
+  }
+  let engine = load_engine(args[2])
+  let s = engine.stats()
+  println("chunks: \{s.doc_count}")
+  println("terms: \{s.term_count}")
+  println("total tokens: \{s.total_tokens}")
+  println("avg doc len: \{s.avg_doc_len}")
 }
 
 ///|
