@@ -11,6 +11,8 @@ pub fn cosine(Array[Double], Array[Double]) -> Double
 
 pub fn default_stopwords() -> Array[String]
 
+pub fn highlight(String, String, tokenizer? : Tokenizer) -> String
+
 pub fn rrf_fuse(Array[ScoredDoc], Array[ScoredDoc], k? : Int, top_k? : Int) -> Array[ScoredDoc]
 
 // Errors
@@ -44,10 +46,14 @@ pub struct Engine {
 pub fn Engine::add_document(Self, String, String) -> Unit
 pub fn Engine::add_documents(Self, Array[(String, String)]) -> Unit
 pub fn Engine::count(Self) -> Int
+pub fn Engine::highlight(Self, String, String) -> String
 pub fn Engine::new(chunker? : Chunker, index? : SearchIndex) -> Self
 pub fn Engine::remove_document(Self, String) -> Int
 pub fn Engine::save(Self) -> String
 pub fn Engine::search(Self, String, top_k? : Int) -> Array[SearchResult]
+pub fn Engine::search_boolean(Self, String, top_k? : Int) -> Array[SearchResult]
+pub fn Engine::search_phrase(Self, String, top_k? : Int) -> Array[SearchResult]
+pub fn Engine::search_prefix(Self, String, top_k? : Int) -> Array[SearchResult]
 pub fn Engine::stats(Self) -> IndexStats
 pub fn Engine::try_load(String) -> Result[Self, String]
 
@@ -89,6 +95,9 @@ pub fn SearchIndex::remove(Self, String) -> Bool
 pub fn SearchIndex::remove_if(Self, (String) -> Bool) -> Int
 pub fn SearchIndex::save(Self) -> String
 pub fn SearchIndex::search(Self, String, top_k? : Int) -> Array[SearchResult]
+pub fn SearchIndex::search_boolean(Self, String, top_k? : Int) -> Array[SearchResult]
+pub fn SearchIndex::search_phrase(Self, String, top_k? : Int) -> Array[SearchResult]
+pub fn SearchIndex::search_prefix(Self, String, top_k? : Int) -> Array[SearchResult]
 pub fn SearchIndex::stats(Self) -> IndexStats
 pub fn SearchIndex::try_load(String) -> Result[Self, String]
 
