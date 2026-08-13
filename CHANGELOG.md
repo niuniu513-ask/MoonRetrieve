@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.0（2026-08-13）
+
+- 新增短语检索 `SearchIndex::search_phrase` / `Engine::search_phrase`，查询短语按原文顺序连续匹配；
+- 新增结果高亮 `highlight`（长词优先、相邻区间合并，输出 `**term**`）；
+- CLI 新增 `phrase` 命令，`query` / `phrase` 支持 `--highlight`；
+- 新增高亮与短语检索测试，测试总数 38 项。
+
 ## 0.2.0（2026-08-13）
 
 - 新增 `SearchIndex::remove` / `remove_if`，支持按文档 ID 或条件删除并重建倒排索引；

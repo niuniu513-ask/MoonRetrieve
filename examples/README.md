@@ -34,3 +34,9 @@ terms: 86
 total tokens: 342
 avg doc len: 28.5
 ```
+
+## 短语检索与高亮
+
+```bash
+moon run cmd/main --target native -- phrase index.json "MoonBit 黑客松" -k 3 --highlight
+```

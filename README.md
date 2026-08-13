@@ -17,12 +17,14 @@
 - 分词器 `Tokenizer`：英文/中文/日文、N-gram、停用词、词干化
 - 分块器 `Chunker`：按段落切分、块间重叠、超长段落硬切
 - BM25 索引 `SearchIndex`：增量建索引、Top-K 检索、JSON 持久化
+- 短语检索 `search_phrase`：查询短语按原文顺序连续出现
 - 向量索引 `VectorIndex`：余弦相似度检索
 - 混合融合 `rrf_fuse`：Reciprocal Rank Fusion
 - 上下文组装 `ContextBuilder`：token 预算控制、来源标注
+- 结果高亮 `highlight`：查询词自动标记 `**term**`
 - 文档删除与统计：`SearchIndex::remove` / `stats`、`Engine::remove_document` / `stats`
 - 一站式引擎 `Engine`：文档 → 分块 → 索引 → 检索
-- CLI：`index` / `query` / `context` / `stats`
+- CLI：`index` / `query` / `context` / `stats` / `phrase`
 
 ## 快速开始
 
@@ -59,6 +61,9 @@ moon run cmd/main --target native -- context demo-index.json "黑客松奖励" -
 
 # 索引统计
 moon run cmd/main --target native -- stats demo-index.json
+
+# 短语检索（可加 --highlight）
+moon run cmd/main --target native -- phrase demo-index.json "MoonBit 黑客松" -k 3
 ```
 
 ## 项目结构

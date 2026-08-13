@@ -64,6 +64,21 @@ let s = engine.stats()               // 分块数 / 词条数 / 总 token / 平�
 println("\{s.doc_count} \{s.term_count}")
 ```
 
+## 5.1 短语检索
+
+```moonbit
+// 查询短语必须按原文顺序连续出现
+let hits = engine.search_phrase("检索增强", top_k=3)
+```
+
+## 5.2 结果高亮
+
+```moonbit
+let text = "RAG 是检索增强生成"
+println(@lib.highlight(text, "检索增强"))
+// RAG 是**检索增强**生成
+```
+
 ## 6. 持久化
 
 ```moonbit
@@ -88,6 +103,9 @@ moon run cmd/main --target native -- context index.json "黑客松" -k 3
 
 # 索引统计
 moon run cmd/main --target native -- stats index.json
+
+# 短语检索（支持 --highlight）
+moon run cmd/main --target native -- phrase index.json "检索增强" -k 3 --highlight
 ```
 
 ## 8. 多后端构建
