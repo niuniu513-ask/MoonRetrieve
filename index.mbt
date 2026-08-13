@@ -74,12 +74,7 @@ pub fn SearchIndex::search(
   top_k? : Int = 10,
 ) -> Array[SearchResult] {
   let q_tokens = self.tokenizer.tokenize(query)
-  let unique : Array[String] = []
-  for t in q_tokens {
-    if !unique.contains(t) {
-      unique.push(t)
-    }
-  }
+  let unique = unique_tokens(q_tokens)
   if unique.is_empty() || self.total_docs == 0 {
     return []
   }
@@ -101,6 +96,40 @@ pub fn SearchIndex::search(
     if score > 0.0 {
       out.push({ doc_id: self.ids[doc], score, text: self.texts[doc] })
     }
+  }
+  out
+}
+
+///|
+/// 短语检索：查询短语必须按原文顺序连续出现，结果仍按 BM25 分数排序。
+pub fn SearchIndex::search_phrase(
+  self : SearchIndex,
+  query : String,
+  top_k? : Int = 10,
+) -> Array[SearchResult] {
+  let q_tokens = self.tokenizer.tokenize(query)
+  if q_tokens.is_empty() || self.total_docs == 0 {
+    return []
+  }
+  let unique = unique_tokens(q_tokens)
+  let scored : Array[(Int, Double)] = []
+  for i = 0; i < self.total_docs; i = i + 1 {
+    if self.texts[i].contains(query) {
+      scored.push((i, self.score_doc(unique, i)))
+    }
+  }
+  scored.sort_by(fn(a, b) {
+    let cmp = b.1.compare(a.1)
+    if cmp != 0 {
+      cmp
+    } else {
+      a.0.compare(b.0)
+    }
+  })
+  let out : Array[SearchResult] = []
+  for i = 0; i < scored.length() && i < top_k; i = i + 1 {
+    let (doc, score) = scored[i]
+    out.push({ doc_id: self.ids[doc], score, text: self.texts[doc] })
   }
   out
 }
@@ -202,6 +231,17 @@ fn SearchIndex::rebuild_postings(self : SearchIndex) -> Unit {
       self.postings[term] = postings
     }
   }
+}
+
+///|
+fn unique_tokens(tokens : Array[String]) -> Array[String] {
+  let out : Array[String] = []
+  for t in tokens {
+    if !out.contains(t) {
+      out.push(t)
+    }
+  }
+  out
 }
 
 ///|

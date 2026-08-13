@@ -49,6 +49,26 @@ pub fn Engine::search(
 }
 
 ///|
+/// 短语检索 Top-K 分块。
+pub fn Engine::search_phrase(
+  self : Engine,
+  query : String,
+  top_k? : Int = 10,
+) -> Array[SearchResult] {
+  self.index.search_phrase(query, top_k~)
+}
+
+///|
+/// 对文本执行查询词高亮。
+pub fn Engine::highlight(
+  self : Engine,
+  text : String,
+  query : String,
+) -> String {
+  highlight(text, query, tokenizer=self.index.tokenizer)
+}
+
+///|
 /// 索引中的分块总数。
 pub fn Engine::count(self : Engine) -> Int {
   self.index.count()

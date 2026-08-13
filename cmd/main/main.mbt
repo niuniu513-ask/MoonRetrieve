@@ -6,6 +6,7 @@
 ///   moon run cmd/main -- query <索引.json> "<查询>" [-k N]
 ///   moon run cmd/main -- context <索引.json> "<查询>" [-k N]
 ///   moon run cmd/main -- stats <索引.json>
+///   moon run cmd/main -- phrase <索引.json> "<短语>" [-k N]
 async fn main {
   let args = @env.args()
   if args.length() < 2 {
@@ -30,6 +31,10 @@ async fn main {
       run_stats(args) catch {
         err => println("Error: \{err.to_string()}")
       }
+    "phrase" =>
+      run_phrase(args) catch {
+        err => println("Error: \{err.to_string()}")
+      }
     _ => usage()
   }
 }
@@ -40,9 +45,10 @@ fn usage() -> Unit {
   println(
     "  index <path> [output.json]        建索引（支持 .md/.txt 文件或目录）",
   )
-  println("  query <index.json> \"<query>\" [-k N]   检索")
+  println("  query <index.json> \"<query>\" [-k N] [--highlight]   检索")
   println("  context <index.json> \"<query>\" [-k N] 生成 LLM 上下文")
   println("  stats <index.json>                      索引统计")
+  println("  phrase <index.json> \"<phrase>\" [-k N]  短语检索")
 }
 
 ///|
@@ -86,9 +92,37 @@ async fn run_query(args : Array[String]) -> Unit {
   println("Top \{results.length()} results for: \{query}")
   for r in results {
     println("\n[\{r.doc_id}] score=\{r.score}")
-    let n = r.text.length()
-    let end = if n > 300 { 300 } else { n }
-    println(r.text.sub(start=0, end~))
+    if args.contains("--highlight") {
+      println(engine.highlight(r.text, query))
+    } else {
+      let n = r.text.length()
+      let end = if n > 300 { 300 } else { n }
+      println(r.text.sub(start=0, end~))
+    }
+  }
+}
+
+///|
+async fn run_phrase(args : Array[String]) -> Unit {
+  if args.length() < 4 {
+    usage()
+    return
+  }
+  let json_path = args[2]
+  let query = args[3]
+  let top_k = parse_top_k(args, 5)
+  let engine = load_engine(json_path)
+  let results = engine.search_phrase(query, top_k~)
+  println("Top \{results.length()} phrase results for: \{query}")
+  for r in results {
+    println("\n[\{r.doc_id}] score=\{r.score}")
+    if args.contains("--highlight") {
+      println(engine.highlight(r.text, query))
+    } else {
+      let n = r.text.length()
+      let end = if n > 300 { 300 } else { n }
+      println(r.text.sub(start=0, end~))
+    }
   }
 }
 
