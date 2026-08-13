@@ -71,7 +71,19 @@ println("\{s.doc_count} \{s.term_count}")
 let hits = engine.search_phrase("检索增强", top_k=3)
 ```
 
-## 5.2 结果高亮
+## 5.2 布尔检索与前缀检索
+
+```moonbit
+// AND：同时包含；OR：任一即可；-term：排除
+let and_hits = engine.search_boolean("moonbit AND rag", top_k=5)
+let or_hits = engine.search_boolean("moonbit OR rag", top_k=5)
+let not_hits = engine.search_boolean("moonbit -old", top_k=5)
+
+// 前缀检索：匹配以给定前缀开头的词条
+let prefix_hits = engine.search_prefix("moon", top_k=5)
+```
+
+## 5.3 结果高亮
 
 ```moonbit
 let text = "RAG 是检索增强生成"
@@ -106,6 +118,10 @@ moon run cmd/main --target native -- stats index.json
 
 # 短语检索（支持 --highlight）
 moon run cmd/main --target native -- phrase index.json "检索增强" -k 3 --highlight
+
+# 布尔检索 / 前缀检索
+moon run cmd/main --target native -- boolean index.json "moonbit AND rag" -k 3
+moon run cmd/main --target native -- prefix index.json "moon" -k 3
 ```
 
 ## 8. 多后端构建
@@ -119,3 +135,9 @@ moon test --target native
 ```
 
 CI 覆盖 native / wasm-gc / js 三个目标。
+
+## 9. 基准测试
+
+```bash
+moon bench --target native
+```

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.0（2026-08-13）
+
+- 新增布尔检索 `SearchIndex::search_boolean` / `Engine::search_boolean`，支持 AND / OR / `-term` 排除（中文词自动展开匹配）；
+- 新增前缀检索 `SearchIndex::search_prefix` / `Engine::search_prefix`；
+- CLI 新增 `boolean` / `prefix` 命令；
+- 新增 3 项基准测试（分词 / 建索引 / 检索），`moon bench` 可运行；
+- CI 新增 CLI 运行时冒烟测试与基准测试步骤；
+- 测试总数 44 项。
+
 ## 0.3.0（2026-08-13）
 
 - 新增短语检索 `SearchIndex::search_phrase` / `Engine::search_phrase`，查询短语按原文顺序连续匹配；

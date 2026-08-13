@@ -40,3 +40,10 @@ avg doc len: 28.5
 ```bash
 moon run cmd/main --target native -- phrase index.json "MoonBit 黑客松" -k 3 --highlight
 ```
+
+## 布尔检索 / 前缀检索
+
+```bash
+moon run cmd/main --target native -- boolean index.json "MoonBit AND RAG" -k 3
+moon run cmd/main --target native -- prefix index.json "moon" -k 3
+```

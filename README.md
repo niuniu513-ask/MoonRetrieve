@@ -18,13 +18,15 @@
 - 分块器 `Chunker`：按段落切分、块间重叠、超长段落硬切
 - BM25 索引 `SearchIndex`：增量建索引、Top-K 检索、JSON 持久化
 - 短语检索 `search_phrase`：查询短语按原文顺序连续出现
+- 布尔检索 `search_boolean`：AND / OR / `-term` 排除
+- 前缀检索 `search_prefix`：按词条前缀匹配
 - 向量索引 `VectorIndex`：余弦相似度检索
 - 混合融合 `rrf_fuse`：Reciprocal Rank Fusion
 - 上下文组装 `ContextBuilder`：token 预算控制、来源标注
 - 结果高亮 `highlight`：查询词自动标记 `**term**`
 - 文档删除与统计：`SearchIndex::remove` / `stats`、`Engine::remove_document` / `stats`
 - 一站式引擎 `Engine`：文档 → 分块 → 索引 → 检索
-- CLI：`index` / `query` / `context` / `stats` / `phrase`
+- CLI：`index` / `query` / `context` / `stats` / `phrase` / `boolean` / `prefix`
 
 ## 快速开始
 
@@ -64,6 +66,10 @@ moon run cmd/main --target native -- stats demo-index.json
 
 # 短语检索（可加 --highlight）
 moon run cmd/main --target native -- phrase demo-index.json "MoonBit 黑客松" -k 3
+
+# 布尔检索 / 前缀检索
+moon run cmd/main --target native -- boolean demo-index.json "MoonBit AND RAG" -k 3
+moon run cmd/main --target native -- prefix demo-index.json "moon" -k 3
 ```
 
 ## 项目结构
@@ -84,9 +90,10 @@ docs/                使用教程、申报书、差异化说明与自查清单
 ## 测试与构建
 
 ```bash
-moon test        # 26 个测试（native / wasm-gc / js 由 CI 覆盖）
+moon test        # 44 个测试（native / wasm-gc / js 由 CI 覆盖）
 moon check
 moon build --target wasm-gc
+moon bench       # 3 项基准（分词 / 建索引 / 检索）
 ```
 
 ## 许可证

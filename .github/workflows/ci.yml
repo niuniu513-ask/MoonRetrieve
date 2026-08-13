@@ -27,6 +27,15 @@ jobs:
           moon update
       - name: Test
         run: moon test --target ${{ matrix.target }}
+      - name: CLI smoke test (native)
+        if: matrix.target == 'native'
+        run: |
+          moon run cmd/main --target native -- index examples/notes smoke-index.json
+          moon run cmd/main --target native -- query smoke-index.json "MoonBit" -k 3
+          moon run cmd/main --target native -- stats smoke-index.json
+      - name: Benchmark (native)
+        if: matrix.target == 'native'
+        run: moon bench --target native
       - name: Build library (wasm-gc)
         if: matrix.target == 'wasm-gc'
         run: moon build --target wasm-gc .
