@@ -69,13 +69,13 @@ context.mbt          LLM 上下文组装
 engine.mbt           一站式引擎
 cmd/main/            CLI
 examples/notes/      示例文档
-docs/                申报书与差异化说明
+docs/                申报书、差异化说明与自查清单
 ```
 
 ## 测试与构建
 
 ```bash
-moon test        # 19+ 个测试
+moon test        # 26 个测试（native / wasm-gc / js 由 CI 覆盖）
 moon check
 moon build --target wasm-gc
 ```
