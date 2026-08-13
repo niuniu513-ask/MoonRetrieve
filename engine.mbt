@@ -59,6 +59,26 @@ pub fn Engine::search_phrase(
 }
 
 ///|
+/// 布尔检索 Top-K 分块（AND / OR / -term）。
+pub fn Engine::search_boolean(
+  self : Engine,
+  query : String,
+  top_k? : Int = 10,
+) -> Array[SearchResult] {
+  self.index.search_boolean(query, top_k~)
+}
+
+///|
+/// 前缀检索 Top-K 分块。
+pub fn Engine::search_prefix(
+  self : Engine,
+  prefix : String,
+  top_k? : Int = 10,
+) -> Array[SearchResult] {
+  self.index.search_prefix(prefix, top_k~)
+}
+
+///|
 /// 对文本执行查询词高亮。
 pub fn Engine::highlight(
   self : Engine,

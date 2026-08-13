@@ -7,6 +7,8 @@
 ///   moon run cmd/main -- context <索引.json> "<查询>" [-k N]
 ///   moon run cmd/main -- stats <索引.json>
 ///   moon run cmd/main -- phrase <索引.json> "<短语>" [-k N]
+///   moon run cmd/main -- boolean <索引.json> "<表达式>" [-k N]
+///   moon run cmd/main -- prefix <索引.json> "<前缀>" [-k N]
 async fn main {
   let args = @env.args()
   if args.length() < 2 {
@@ -35,6 +37,14 @@ async fn main {
       run_phrase(args) catch {
         err => println("Error: \{err.to_string()}")
       }
+    "boolean" =>
+      run_boolean(args) catch {
+        err => println("Error: \{err.to_string()}")
+      }
+    "prefix" =>
+      run_prefix(args) catch {
+        err => println("Error: \{err.to_string()}")
+      }
     _ => usage()
   }
 }
@@ -49,6 +59,10 @@ fn usage() -> Unit {
   println("  context <index.json> \"<query>\" [-k N] 生成 LLM 上下文")
   println("  stats <index.json>                      索引统计")
   println("  phrase <index.json> \"<phrase>\" [-k N]  短语检索")
+  println(
+    "  boolean <index.json> \"<expr>\" [-k N]   布尔检索（AND/OR/-term）",
+  )
+  println("  prefix <index.json> \"<prefix>\" [-k N]  前缀检索")
 }
 
 ///|
@@ -123,6 +137,44 @@ async fn run_phrase(args : Array[String]) -> Unit {
       let end = if n > 300 { 300 } else { n }
       println(r.text.sub(start=0, end~))
     }
+  }
+}
+
+///|
+async fn run_boolean(args : Array[String]) -> Unit {
+  if args.length() < 4 {
+    usage()
+    return
+  }
+  let engine = load_engine(args[2])
+  let query = args[3]
+  let top_k = parse_top_k(args, 5)
+  let results = engine.search_boolean(query, top_k~)
+  println("Top \{results.length()} boolean results for: \{query}")
+  for r in results {
+    println("\n[\{r.doc_id}] score=\{r.score}")
+    let n = r.text.length()
+    let end = if n > 300 { 300 } else { n }
+    println(r.text.sub(start=0, end~))
+  }
+}
+
+///|
+async fn run_prefix(args : Array[String]) -> Unit {
+  if args.length() < 4 {
+    usage()
+    return
+  }
+  let engine = load_engine(args[2])
+  let prefix = args[3]
+  let top_k = parse_top_k(args, 5)
+  let results = engine.search_prefix(prefix, top_k~)
+  println("Top \{results.length()} prefix results for: \{prefix}")
+  for r in results {
+    println("\n[\{r.doc_id}] score=\{r.score}")
+    let n = r.text.length()
+    let end = if n > 300 { 300 } else { n }
+    println(r.text.sub(start=0, end~))
   }
 }
 

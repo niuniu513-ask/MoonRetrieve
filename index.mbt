@@ -135,6 +135,119 @@ pub fn SearchIndex::search_phrase(
 }
 
 ///|
+/// 布尔检索：支持 `AND` / `OR` 连接词与 `-term` 排除。
+///
+/// 示例：
+/// - `"moonbit AND rag"`：同时包含 moonbit 与 rag
+/// - `"moonbit OR rag"`：包含任一即可
+/// - `"moonbit -old"`：包含 moonbit 且不含 old
+pub fn SearchIndex::search_boolean(
+  self : SearchIndex,
+  query : String,
+  top_k? : Int = 10,
+) -> Array[SearchResult] {
+  let parts : Array[String] = []
+  for p in query.split(" ") {
+    let s = p.trim().to_owned()
+    if !s.is_empty() {
+      parts.push(s)
+    }
+  }
+  let must : Array[String] = []
+  let any : Array[String] = []
+  let not : Array[String] = []
+  let has_and = parts.contains("AND")
+  let has_or = parts.contains("OR")
+  for p in parts {
+    if p == "AND" || p == "OR" {
+      continue
+    }
+    if p.has_prefix("-") {
+      let t = p.sub(start=1, end=p.length()).to_owned()
+      if !t.is_empty() {
+        not.push(t)
+      }
+    } else if has_and {
+      must.push(p)
+    } else if has_or {
+      any.push(p)
+    } else {
+      any.push(p)
+    }
+  }
+  let must_tokens = self.expand_terms(must)
+  let any_tokens = self.expand_terms(any)
+  let not_tokens = self.expand_terms(not)
+  if must_tokens.is_empty() && any_tokens.is_empty() {
+    return []
+  }
+  let positive = unique_tokens(must_tokens + any_tokens)
+  let scored : Array[(Int, Double)] = []
+  for i = 0; i < self.total_docs; i = i + 1 {
+    if self.match_boolean(i, must_tokens, any_tokens, not_tokens) {
+      scored.push((i, self.score_doc(positive, i)))
+    }
+  }
+  scored.sort_by(fn(a, b) {
+    let cmp = b.1.compare(a.1)
+    if cmp != 0 {
+      cmp
+    } else {
+      a.0.compare(b.0)
+    }
+  })
+  let out : Array[SearchResult] = []
+  for i = 0; i < scored.length() && i < top_k; i = i + 1 {
+    let (doc, score) = scored[i]
+    out.push({ doc_id: self.ids[doc], score, text: self.texts[doc] })
+  }
+  out
+}
+
+///|
+/// 前缀检索：匹配以给定前缀开头的词条，结果按 BM25 分数排序。
+pub fn SearchIndex::search_prefix(
+  self : SearchIndex,
+  prefix : String,
+  top_k? : Int = 10,
+) -> Array[SearchResult] {
+  if prefix.is_empty() || self.total_docs == 0 {
+    return []
+  }
+  let terms : Array[String] = []
+  for kv in self.postings.iter() {
+    let (term, _) = kv
+    if term.has_prefix(prefix) {
+      terms.push(term)
+    }
+  }
+  if terms.is_empty() {
+    return []
+  }
+  let scored : Array[(Int, Double)] = []
+  for i = 0; i < self.total_docs; i = i + 1 {
+    let score = self.score_doc(terms, i)
+    if score > 0.0 {
+      scored.push((i, score))
+    }
+  }
+  scored.sort_by(fn(a, b) {
+    let cmp = b.1.compare(a.1)
+    if cmp != 0 {
+      cmp
+    } else {
+      a.0.compare(b.0)
+    }
+  })
+  let out : Array[SearchResult] = []
+  for i = 0; i < scored.length() && i < top_k; i = i + 1 {
+    let (doc, score) = scored[i]
+    out.push({ doc_id: self.ids[doc], score, text: self.texts[doc] })
+  }
+  out
+}
+
+///|
 /// 序列化为 JSON 字符串。
 pub fn SearchIndex::save(self : SearchIndex) -> String {
   @json.to_json(self).stringify()
@@ -242,6 +355,72 @@ fn unique_tokens(tokens : Array[String]) -> Array[String] {
     }
   }
   out
+}
+
+///|
+fn SearchIndex::expand_terms(
+  self : SearchIndex,
+  terms : Array[String],
+) -> Array[String] {
+  let out : Array[String] = []
+  for t in terms {
+    for tok in self.tokenizer.tokenize(t) {
+      out.push(tok)
+    }
+  }
+  out
+}
+
+///|
+fn SearchIndex::doc_has_term(
+  self : SearchIndex,
+  doc : Int,
+  term : String,
+) -> Bool {
+  match self.postings.get(term) {
+    None => false
+    Some(postings) => {
+      for p in postings {
+        if p.doc_id == doc {
+          return true
+        }
+      }
+      false
+    }
+  }
+}
+
+///|
+fn SearchIndex::match_boolean(
+  self : SearchIndex,
+  doc : Int,
+  must : Array[String],
+  any : Array[String],
+  not : Array[String],
+) -> Bool {
+  for t in must {
+    if !self.doc_has_term(doc, t) {
+      return false
+    }
+  }
+  if !any.is_empty() {
+    let mut ok = false
+    for t in any {
+      if self.doc_has_term(doc, t) {
+        ok = true
+        break
+      }
+    }
+    if !ok {
+      return false
+    }
+  }
+  for t in not {
+    if self.doc_has_term(doc, t) {
+      return false
+    }
+  }
+  true
 }
 
 ///|

@@ -2,3 +2,7 @@ import {
   "moonbitlang/core/json",
   "moonbitlang/core/math",
 }
+
+import {
+  "moonbitlang/core/bench",
+} for "test"
