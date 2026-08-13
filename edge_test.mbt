@@ -17,7 +17,8 @@ test "japanese kana unigrams and bigrams" {
 test "mixed ascii and chinese" {
   let t = @MoonRetrieve.Tokenizer::new()
   assert_true(
-    t.tokenize("RAG 是什么") == ["rag", "是", "什", "是什", "么", "什么"],
+    t.tokenize("RAG 是什么") ==
+    ["rag", "是", "什", "是什", "么", "什么"],
   )
 }
 
@@ -25,7 +26,8 @@ test "mixed ascii and chinese" {
 test "chinese stopwords filter unigrams only" {
   let t = @MoonRetrieve.Tokenizer::new(stopwords=["的"])
   assert_true(
-    t.tokenize("我的世界") == ["我", "我的", "世", "的世", "界", "世界"],
+    t.tokenize("我的世界") ==
+    ["我", "我的", "世", "的世", "界", "世界"],
   )
 }
 
@@ -38,7 +40,14 @@ test "empty document produces no chunks" {
 ///|
 test "overlap larger than max chars is clamped" {
   let c = @MoonRetrieve.Chunker::new(max_chars=10, overlap=100)
-  assert_true(c.chunk("doc4", "一二三四五六七八九十一二三四五六七八九十").length() == 2)
+  assert_true(
+    c
+    .chunk(
+      "doc4", "一二三四五六七八九十一二三四五六七八九十",
+    )
+    .length() ==
+    2,
+  )
 }
 
 ///|

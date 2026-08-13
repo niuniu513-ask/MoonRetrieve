@@ -45,9 +45,19 @@ pub fn Engine::add_document(Self, String, String) -> Unit
 pub fn Engine::add_documents(Self, Array[(String, String)]) -> Unit
 pub fn Engine::count(Self) -> Int
 pub fn Engine::new(chunker? : Chunker, index? : SearchIndex) -> Self
+pub fn Engine::remove_document(Self, String) -> Int
 pub fn Engine::save(Self) -> String
 pub fn Engine::search(Self, String, top_k? : Int) -> Array[SearchResult]
+pub fn Engine::stats(Self) -> IndexStats
 pub fn Engine::try_load(String) -> Result[Self, String]
+
+pub struct IndexStats {
+  doc_count : Int
+  term_count : Int
+  total_tokens : Int
+  avg_doc_len : Double
+} derive(ToJson, @debug.Debug, @json.FromJson)
+pub fn IndexStats::new(Int, Int, Int, Double) -> Self
 
 pub struct Posting {
   doc_id : Int
@@ -61,10 +71,10 @@ pub struct ScoredDoc {
 pub fn ScoredDoc::new(String, Double) -> Self
 
 pub struct SearchIndex {
-  ids : Array[String]
-  texts : Array[String]
-  lens : Array[Int]
-  postings : Map[String, Array[Posting]]
+  mut ids : Array[String]
+  mut texts : Array[String]
+  mut lens : Array[Int]
+  mut postings : Map[String, Array[Posting]]
   mut total_docs : Int
   mut sum_len : Int
   mut avg_dl : Double
@@ -75,8 +85,11 @@ pub struct SearchIndex {
 pub fn SearchIndex::add(Self, String, String) -> Unit
 pub fn SearchIndex::count(Self) -> Int
 pub fn SearchIndex::new(k1? : Double, b? : Double, tokenizer? : Tokenizer) -> Self
+pub fn SearchIndex::remove(Self, String) -> Bool
+pub fn SearchIndex::remove_if(Self, (String) -> Bool) -> Int
 pub fn SearchIndex::save(Self) -> String
 pub fn SearchIndex::search(Self, String, top_k? : Int) -> Array[SearchResult]
+pub fn SearchIndex::stats(Self) -> IndexStats
 pub fn SearchIndex::try_load(String) -> Result[Self, String]
 
 pub struct SearchResult {

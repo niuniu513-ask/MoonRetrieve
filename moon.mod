@@ -19,7 +19,17 @@ repository = "https://github.com/niuniu513-ask/MoonRetrieve"
 
 license = "Apache-2.0"
 
-keywords = [ "moonbit", "search", "bm25", "rag", "tokenizer", "wasm", "local-first", "hybrid", "rrf" ]
+keywords = [
+  "moonbit",
+  "search",
+  "bm25",
+  "rag",
+  "tokenizer",
+  "wasm",
+  "local-first",
+  "hybrid",
+  "rrf",
+]
 
 preferred_target = "wasm"
 
