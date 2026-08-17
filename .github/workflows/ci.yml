@@ -25,8 +25,12 @@ jobs:
         run: |
           moon version
           moon update
+      - name: Format
+        run: moon fmt --check .
+      - name: Check
+        run: moon check --deny-warn --target ${{ matrix.target }}
       - name: Test
-        run: moon test --target ${{ matrix.target }}
+        run: moon test --deny-warn --target ${{ matrix.target }}
       - name: CLI smoke test (native)
         if: matrix.target == 'native'
         run: |
@@ -39,6 +43,3 @@ jobs:
       - name: Build library (wasm-gc)
         if: matrix.target == 'wasm-gc'
         run: moon build --target wasm-gc .
-      - name: Check native
-        if: matrix.target == 'native'
-        run: moon check --target native
