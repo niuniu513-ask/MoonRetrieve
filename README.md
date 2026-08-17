@@ -99,3 +99,7 @@ moon bench       # 3 项基准（分词 / 建索引 / 检索）
 ## 许可证
 
 Apache-2.0
+
+## 来源与合规
+
+项目为原创 MoonBit 实现，未复制第三方搜索引擎、RAG 框架、分词器或向量数据库源码。实现参考的公开信息检索概念、示例数据和差异化说明见 [docs/SOURCES.md](docs/SOURCES.md) 与 [docs/differentiation.md](docs/differentiation.md)。
