@@ -2,7 +2,7 @@
 
 ## 总体判断
 
-`MoonRetrieve` 是一个有效的 MoonBit 项目，定位为纯 MoonBit 零 FFI 的本地全文检索与 RAG 检索库。项目具备分词、分块、BM25、短语/布尔/前缀检索、向量索引、RRF 融合、上下文组装、CLI、示例、差异化文档、CI、测试和 Apache-2.0 许可证，适合作为 MoonBit 应用生态/基础组件方向提交。
+`MoonRetrieve` 是一个有效的 MoonBit 项目，定位为纯 MoonBit 零 FFI 的本地全文检索与 RAG 检索库。项目具备分词、分块、BM25、短语/布尔/前缀检索、向量索引、RRF 融合、上下文组装、CLI、可在 wasm-gc 运行的最小示例、差异化文档、CI、测试和 Apache-2.0 许可证，适合作为 MoonBit 应用生态/基础组件方向提交。
 
 当前主要竞争性风险是源码规模偏小：核心 MoonBit 源码约 1302 行，不含测试；含测试约 1758 行，低于章程 4-10k 有效 MoonBit 行数参考范围。GitHub、CI、许可证、README、示例、测试和 mooncakes 发布均已具备终审所需证据，申报和验收时应强调项目边界是轻量本地检索/RAG 组件。
 
@@ -32,8 +32,9 @@
 - `moon test --deny-warn`：44 个测试全部通过。
 - `moon fmt --check .`：通过。
 - `moon info`：通过。
+- `moon run examples/quickstart --target wasm-gc`：通过，可直接验证建索引、检索和上下文组装。
 - GitHub Actions：最新 CI 已通过 native CLI smoke、三目标测试和 benchmark。
-- `moon publish`：`niuniu513-ask/MoonRetrieve@0.4.1` 已发布成功。
+- `moon publish`：`niuniu513-ask/MoonRetrieve@0.4.2` 已发布成功；当前本地版本已提升为 `0.4.3`，待重新发布。
 - `git remote show origin`：远程默认分支为 `main`，本地 `main` 已跟踪 `origin/main`。
 - `git rev-list --count HEAD`：当前历史达到 20 个以上提交，提交数满足申报建议范围。
 

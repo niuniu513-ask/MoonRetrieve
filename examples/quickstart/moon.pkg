@@ -1,0 +1,5 @@
+import {
+  "niuniu513-ask/MoonRetrieve" @search,
+}
+
+pkgtype(kind: "executable")

@@ -96,6 +96,12 @@ moon build --target wasm-gc
 moon bench       # 3 项基准（分词 / 建索引 / 检索）
 ```
 
+## 最小示例
+
+```bash
+moon run examples/quickstart --target wasm-gc
+```
+
 ## 许可证
 
 Apache-2.0
