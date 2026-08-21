@@ -34,7 +34,7 @@
 - `moon info`：通过。
 - `moon run examples/quickstart --target wasm-gc`：通过，可直接验证建索引、检索和上下文组装。
 - GitHub Actions：最新 CI 已通过 native CLI smoke、三目标测试和 benchmark。
-- `moon publish`：`niuniu513-ask/MoonRetrieve@0.4.3` 已发布成功；当前本地版本为 `0.5.0`，待发布。
+- `moon publish`：`niuniu513-ask/MoonRetrieve@0.5.0` 已发布成功。
 - `git remote show origin`：远程默认分支为 `main`，本地 `main` 已跟踪 `origin/main`。
 - `git rev-list --count HEAD`：当前历史为 22 个提交，超过申报阶段建议的 10–20 个有效提交；这些提交均为真实开发历史，不做破坏性改写。该区间不是终审硬标准。
 
