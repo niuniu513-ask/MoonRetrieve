@@ -7,13 +7,97 @@ import {
 }
 
 // Values
+pub fn average_precision_at(Array[String], Array[String], Int) -> Double
+
+pub fn complete_prefix(String, Array[String], limit? : Int) -> Array[String]
+
+pub fn corpus_coverage(Array[Array[String]], Array[String], cutoff? : Int) -> Double
+
+pub fn correct_query(String, Array[String], max_distance? : Int) -> String
+
 pub fn cosine(Array[Double], Array[Double]) -> Double
+
+pub fn deduplicate_by_source(Array[SearchResult], limit? : Int) -> Array[SearchResult]
 
 pub fn default_stopwords() -> Array[String]
 
+pub fn diversify_results(Array[SearchResult], similarity_threshold? : Double, limit? : Int, tokenizer? : Tokenizer) -> Array[SearchResult]
+
+pub fn edit_distance(String, String) -> Int
+
+pub fn edit_similarity(String, String) -> Double
+
+pub fn evaluate_ranking(Array[String], Array[String], cutoff? : Int) -> RetrievalMetrics
+
+pub fn evaluate_results(Array[SearchResult], Array[String], cutoff? : Int) -> RetrievalMetrics
+
+pub fn explain_result(String, SearchResult, tokenizer? : Tokenizer) -> ResultExplanation
+
+pub fn explain_results(String, Array[SearchResult], tokenizer? : Tokenizer) -> Array[ResultExplanation]
+
+pub fn explanation_summary(ResultExplanation) -> String
+
+pub fn extract_keywords(String, limit? : Int, tokenizer? : Tokenizer) -> Array[Keyword]
+
+pub fn f1_score(Double, Double) -> Double
+
+pub fn filter_results(Array[SearchResult], min_score? : Double, max_results? : Int) -> Array[SearchResult]
+
+pub fn filter_with_query_plan(Array[SearchResult], QueryPlan, tokenizer? : Tokenizer) -> Array[SearchResult]
+
+pub fn format_query_plan(QueryPlan) -> String
+
+pub fn group_results_by_source(Array[SearchResult]) -> Array[ResultGroup]
+
 pub fn highlight(String, String, tokenizer? : Tokenizer) -> String
 
+pub fn mean_average_precision(Array[Array[String]], Array[Array[String]], cutoff? : Int) -> Double
+
+pub fn mean_reciprocal_rank(Array[Array[String]], Array[Array[String]], cutoff? : Int) -> Double
+
+pub fn normalize_result_scores(Array[SearchResult]) -> Array[SearchResult]
+
+pub fn paginate_results(Array[SearchResult], offset? : Int, limit? : Int) -> Array[SearchResult]
+
+pub fn parse_query(String) -> Result[QueryPlan, String]
+
+pub fn precision_at(Array[String], Array[String], Int) -> Double
+
+pub fn r_precision(Array[String], Array[String]) -> Double
+
+pub fn recall_at(Array[String], Array[String], Int) -> Double
+
+pub fn reciprocal_rank_at(Array[String], Array[String], Int) -> Double
+
+pub fn result_ids(Array[SearchResult]) -> Array[String]
+
+pub fn result_score_range(Array[SearchResult]) -> (Double, Double)?
+
+pub fn result_snippet(String, String, max_chars? : Int, tokenizer? : Tokenizer) -> String
+
 pub fn rrf_fuse(Array[ScoredDoc], Array[ScoredDoc], k? : Int, top_k? : Int) -> Array[ScoredDoc]
+
+pub fn shared_prefix_length(String, String) -> Int
+
+pub fn snippets_for_results(Array[SearchResult], String, max_chars? : Int, tokenizer? : Tokenizer) -> Array[SearchResult]
+
+pub fn sort_results(Array[SearchResult]) -> Array[SearchResult]
+
+pub fn source_doc_id(String) -> String
+
+pub fn split_sentences(String) -> Array[String]
+
+pub fn suggest_terms(String, Array[String], max_distance? : Int, limit? : Int) -> Array[QuerySuggestion]
+
+pub fn summarize_evaluations(Array[RetrievalMetrics]) -> EvaluationSummary
+
+pub fn summarize_text(String, query? : String, max_sentences? : Int, tokenizer? : Tokenizer) -> TextSummary
+
+pub fn token_jaccard(String, String, tokenizer? : Tokenizer) -> Double
+
+pub fn transposition_distance(String, String) -> Int
+
+pub fn weighted_fuse_results(Array[SearchResult], Array[SearchResult], left_weight? : Double, right_weight? : Double, limit? : Int) -> Array[SearchResult]
 
 // Errors
 
@@ -57,6 +141,16 @@ pub fn Engine::search_prefix(Self, String, top_k? : Int) -> Array[SearchResult]
 pub fn Engine::stats(Self) -> IndexStats
 pub fn Engine::try_load(String) -> Result[Self, String]
 
+pub struct EvaluationSummary {
+  query_count : Int
+  mean_precision : Double
+  mean_recall : Double
+  mean_f1 : Double
+  mean_reciprocal_rank : Double
+  mean_average_precision : Double
+  hit_rate : Double
+} derive(@debug.Debug)
+
 pub struct IndexStats {
   doc_count : Int
   term_count : Int
@@ -65,10 +159,74 @@ pub struct IndexStats {
 } derive(ToJson, @debug.Debug, @json.FromJson)
 pub fn IndexStats::new(Int, Int, Int, Double) -> Self
 
+pub struct Keyword {
+  term : String
+  count : Int
+  frequency : Double
+} derive(Eq, @debug.Debug)
+
 pub struct Posting {
   doc_id : Int
   tf : Int
 } derive(Eq, ToJson, @debug.Debug, @json.FromJson)
+
+pub struct QueryClause {
+  value : String
+  field : String?
+  required : Bool
+  excluded : Bool
+  phrase : Bool
+  prefix : Bool
+} derive(Eq, @debug.Debug)
+
+pub struct QueryPlan {
+  original : String
+  clauses : Array[QueryClause]
+} derive(Eq, @debug.Debug)
+pub fn QueryPlan::excluded_values(Self) -> Array[String]
+pub fn QueryPlan::has_field(Self, String) -> Bool
+pub fn QueryPlan::matches(Self, String, tokenizer? : Tokenizer) -> Bool
+pub fn QueryPlan::positive_values(Self) -> Array[String]
+pub fn QueryPlan::required_values(Self) -> Array[String]
+pub fn QueryPlan::search_text(Self) -> String
+
+pub struct QuerySuggestion {
+  value : String
+  distance : Int
+  similarity : Double
+} derive(Eq, @debug.Debug)
+
+pub struct ResultExplanation {
+  doc_id : String
+  score : Double
+  matched_terms : Array[String]
+  missing_terms : Array[String]
+  matched_required : Int
+  total_required : Int
+  token_overlap : Double
+} derive(@debug.Debug)
+
+pub struct ResultGroup {
+  doc_id : String
+  best_score : Double
+  total_score : Double
+  chunk_count : Int
+  chunks : Array[SearchResult]
+} derive(@debug.Debug)
+
+pub struct RetrievalMetrics {
+  cutoff : Int
+  retrieved : Int
+  relevant : Int
+  relevant_retrieved : Int
+  precision : Double
+  recall : Double
+  f1 : Double
+  hit_rate : Double
+  reciprocal_rank : Double
+  average_precision : Double
+  r_precision : Double
+} derive(@debug.Debug)
 
 pub struct ScoredDoc {
   id : String
@@ -107,6 +265,13 @@ pub struct SearchResult {
   text : String
 } derive(Eq, ToJson, @debug.Debug, @json.FromJson)
 pub fn SearchResult::new(String, Double, String) -> Self
+
+pub struct TextSummary {
+  text : String
+  original_sentences : Int
+  selected_sentences : Int
+  estimated_tokens : Int
+} derive(Eq, @debug.Debug)
 
 pub struct Tokenizer {
   min_token_len : Int

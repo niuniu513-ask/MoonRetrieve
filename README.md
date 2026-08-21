@@ -82,6 +82,11 @@ index.mbt            BM25 倒排索引
 vector.mbt           向量索引与 RRF 融合
 context.mbt          LLM 上下文组装
 engine.mbt           一站式引擎
+evaluation.mbt       Precision/Recall/MRR/MAP 等检索评估指标
+suggest.mbt          Unicode 查询纠错、推荐与前缀补全
+query.mbt            必选/排除/短语/前缀结构化查询
+result_ops.mbt       融合、去重、分组与多样化
+summary.mbt          关键词、摘要与命中片段
 cmd/main/            CLI
 examples/notes/      示例文档
 docs/                使用教程、申报书、差异化说明与自查清单
@@ -90,7 +95,7 @@ docs/                使用教程、申报书、差异化说明与自查清单
 ## 测试与构建
 
 ```bash
-moon test        # 44 个测试（native / wasm-gc / js 由 CI 覆盖）
+moon test        # 100 个测试（native / wasm-gc / js 由 CI 覆盖）
 moon check
 moon build --target wasm-gc
 moon bench       # 3 项基准（分词 / 建索引 / 检索）
@@ -109,3 +114,7 @@ Apache-2.0
 ## 来源与合规
 
 项目为原创 MoonBit 实现，未复制第三方搜索引擎、RAG 框架、分词器或向量数据库源码。实现参考的公开信息检索概念、示例数据和差异化说明见 [docs/SOURCES.md](docs/SOURCES.md) 与 [docs/differentiation.md](docs/differentiation.md)。
+
+## 参赛与维护
+
+OSC 2026 申请人、仓库账号及历史 Git 作者身份说明见 [docs/PARTICIPATION.md](docs/PARTICIPATION.md)。

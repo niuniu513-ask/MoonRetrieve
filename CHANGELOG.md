@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0（2026-08-21）
+
+- 新增 Precision、Recall、F1、MRR、MAP、R-Precision 与覆盖率等检索评估指标；
+- 新增结构化查询解析、相关性解释、摘要与片段生成；
+- 新增拼写纠错、前缀补全、结果归一化、过滤、分页、去重、融合与多样化工具；
+- 补充身份关系说明与回归测试，测试总数达到 100 项。
+
 ## 0.4.0（2026-08-13）
 
 - 新增布尔检索 `SearchIndex::search_boolean` / `Engine::search_boolean`，支持 AND / OR / `-term` 排除（中文词自动展开匹配）；
