@@ -136,8 +136,10 @@ pub fn Engine::remove_document(Self, String) -> Int
 pub fn Engine::save(Self) -> String
 pub fn Engine::search(Self, String, top_k? : Int) -> Array[SearchResult]
 pub fn Engine::search_boolean(Self, String, top_k? : Int) -> Array[SearchResult]
+pub fn Engine::search_explained(Self, String, top_k? : Int) -> Array[ResultExplanation]
 pub fn Engine::search_phrase(Self, String, top_k? : Int) -> Array[SearchResult]
 pub fn Engine::search_prefix(Self, String, top_k? : Int) -> Array[SearchResult]
+pub fn Engine::search_snippets(Self, String, top_k? : Int, max_chars? : Int) -> Array[SearchResult]
 pub fn Engine::stats(Self) -> IndexStats
 pub fn Engine::try_load(String) -> Result[Self, String]
 

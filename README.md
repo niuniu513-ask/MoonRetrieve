@@ -27,6 +27,7 @@
 - 文档删除与统计：`SearchIndex::remove` / `stats`、`Engine::remove_document` / `stats`
 - 一站式引擎 `Engine`：文档 → 分块 → 索引 → 检索
 - CLI：`index` / `query` / `context` / `stats` / `phrase` / `boolean` / `prefix`
+- 结果诊断 CLI：`snippet` 输出限定长度命中片段，`explain` 输出匹配词和覆盖情况
 
 ## 快速开始
 
@@ -118,3 +119,7 @@ Apache-2.0
 ## 参赛与维护
 
 OSC 2026 申请人、仓库账号及历史 Git 作者身份说明见 [docs/PARTICIPATION.md](docs/PARTICIPATION.md)。
+
+### 本期实质新增工作
+
+本期赛事周期内，MoonRetrieve 已完成面向可评估检索的实质功能扩展：新增检索评估指标（Precision、Recall、F1、MRR、MAP、R-Precision、覆盖率）、结构化查询解析、相关性解释、摘要与命中片段生成、Unicode 查询纠错与前缀补全，以及结果过滤、分页、去重、融合、分组和多样化；同步新增 100 项回归测试、`examples/quickstart` 可运行示例、CLI 冒烟测试和三项基准测试，并由 CI 覆盖 native / wasm-gc / js。对应实现和测试见 `evaluation.mbt`、`query.mbt`、`explain.mbt`、`summary.mbt`、`suggest.mbt`、`result_ops.mbt` 及其测试文件，主要变更可在提交 `661664e`、`e83cad6`、`24e8448` 中核验。

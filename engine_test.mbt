@@ -23,3 +23,17 @@ test "engine save and load roundtrip" {
     Err(msg) => assert_true(false, msg~)
   }
 }
+
+///|
+test "engine returns snippets and relevance explanations" {
+  let e = @MoonRetrieve.Engine::new()
+  e.add_document(
+    "guide", "MoonBit 是面向云边计算的编程语言。它支持 WASM。",
+  )
+  e.add_document("faq", "RAG 是检索增强生成。")
+  let snippets = e.search_snippets("MoonBit 编程", top_k=3, max_chars=12)
+  assert_true(snippets.length() == 1)
+  assert_true(snippets[0].text.length() <= 18)
+  let explanations = e.search_explained("MoonBit 编程", top_k=3)
+  assert_true(explanations.length() == 1)
+}

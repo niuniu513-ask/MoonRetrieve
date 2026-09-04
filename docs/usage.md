@@ -122,6 +122,10 @@ moon run cmd/main --target native -- phrase index.json "检索增强" -k 3 --hig
 # 布尔检索 / 前缀检索
 moon run cmd/main --target native -- boolean index.json "moonbit AND rag" -k 3
 moon run cmd/main --target native -- prefix index.json "moon" -k 3
+
+# 输出限定长度的命中片段 / 相关性解释
+moon run cmd/main --target native -- snippet index.json "MoonBit" -k 3 --chars 160
+moon run cmd/main --target native -- explain index.json "MoonBit" -k 3
 ```
 
 ## 8. 多后端构建

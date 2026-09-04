@@ -79,6 +79,34 @@ pub fn Engine::search_prefix(
 }
 
 ///|
+/// 检索并返回限定长度的命中片段，适合列表或终端展示。
+pub fn Engine::search_snippets(
+  self : Engine,
+  query : String,
+  top_k? : Int = 10,
+  max_chars? : Int = 160,
+) -> Array[SearchResult] {
+  let results = self.search(query, top_k~)
+  snippets_for_results(
+    results,
+    query,
+    max_chars~,
+    tokenizer=self.index.tokenizer,
+  )
+}
+
+///|
+/// 检索并返回每条结果的相关性解释。
+pub fn Engine::search_explained(
+  self : Engine,
+  query : String,
+  top_k? : Int = 10,
+) -> Array[ResultExplanation] {
+  let results = self.search(query, top_k~)
+  explain_results(query, results, tokenizer=self.index.tokenizer)
+}
+
+///|
 /// 对文本执行查询词高亮。
 pub fn Engine::highlight(
   self : Engine,

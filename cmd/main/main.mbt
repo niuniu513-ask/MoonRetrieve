@@ -9,6 +9,8 @@
 ///   moon run cmd/main -- phrase <索引.json> "<短语>" [-k N]
 ///   moon run cmd/main -- boolean <索引.json> "<表达式>" [-k N]
 ///   moon run cmd/main -- prefix <索引.json> "<前缀>" [-k N]
+///   moon run cmd/main -- snippet <索引.json> "<查询>" [-k N] [--chars N]
+///   moon run cmd/main -- explain <索引.json> "<查询>" [-k N]
 async fn main {
   let args = @env.args()
   if args.length() < 2 {
@@ -45,6 +47,14 @@ async fn main {
       run_prefix(args) catch {
         err => println("Error: \{err.to_string()}")
       }
+    "snippet" =>
+      run_snippet(args) catch {
+        err => println("Error: \{err.to_string()}")
+      }
+    "explain" =>
+      run_explain(args) catch {
+        err => println("Error: \{err.to_string()}")
+      }
     _ => usage()
   }
 }
@@ -63,6 +73,10 @@ fn usage() -> Unit {
     "  boolean <index.json> \"<expr>\" [-k N]   布尔检索（AND/OR/-term）",
   )
   println("  prefix <index.json> \"<prefix>\" [-k N]  前缀检索")
+  println(
+    "  snippet <index.json> \"<query>\" [-k N] [--chars N]  输出命中片段",
+  )
+  println("  explain <index.json> \"<query>\" [-k N]  输出相关性解释")
 }
 
 ///|
@@ -179,6 +193,40 @@ async fn run_prefix(args : Array[String]) -> Unit {
 }
 
 ///|
+async fn run_snippet(args : Array[String]) -> Unit {
+  if args.length() < 4 {
+    usage()
+    return
+  }
+  let engine = load_engine(args[2])
+  let query = args[3]
+  let top_k = parse_top_k(args, 5)
+  let max_chars = parse_option(args, "--chars", 160)
+  let results = engine.search_snippets(query, top_k~, max_chars~)
+  println("Top \{results.length()} snippets for: \{query}")
+  for r in results {
+    println("\n[\{r.doc_id}] score=\{r.score}")
+    println(r.text)
+  }
+}
+
+///|
+async fn run_explain(args : Array[String]) -> Unit {
+  if args.length() < 4 {
+    usage()
+    return
+  }
+  let engine = load_engine(args[2])
+  let query = args[3]
+  let top_k = parse_top_k(args, 5)
+  let explanations = engine.search_explained(query, top_k~)
+  println("Explanations for: \{query}")
+  for explanation in explanations {
+    println(@lib.explanation_summary(explanation))
+  }
+}
+
+///|
 async fn run_context(args : Array[String]) -> Unit {
   if args.length() < 4 {
     usage()
@@ -243,6 +291,16 @@ fn is_doc_file(path : String) -> Bool {
 fn parse_top_k(args : Array[String], default : Int) -> Int {
   for i = 2; i + 1 < args.length(); i = i + 1 {
     if args[i] == "-k" {
+      return @string.parse_int(args[i + 1]) catch { _ => default }
+    }
+  }
+  default
+}
+
+///|
+fn parse_option(args : Array[String], name : String, default : Int) -> Int {
+  for i = 2; i + 1 < args.length(); i = i + 1 {
+    if args[i] == name {
       return @string.parse_int(args[i + 1]) catch { _ => default }
     }
   }
