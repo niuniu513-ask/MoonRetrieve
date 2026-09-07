@@ -129,10 +129,12 @@ pub struct Engine {
 } derive(ToJson, @json.FromJson)
 pub fn Engine::add_document(Self, String, String) -> Unit
 pub fn Engine::add_documents(Self, Array[(String, String)]) -> Unit
+pub fn Engine::build_context(Self, String, top_k? : Int, max_tokens? : Int) -> String
 pub fn Engine::count(Self) -> Int
 pub fn Engine::highlight(Self, String, String) -> String
 pub fn Engine::new(chunker? : Chunker, index? : SearchIndex) -> Self
 pub fn Engine::remove_document(Self, String) -> Int
+pub fn Engine::replace_document(Self, String, String) -> Int
 pub fn Engine::save(Self) -> String
 pub fn Engine::search(Self, String, top_k? : Int) -> Array[SearchResult]
 pub fn Engine::search_boolean(Self, String, top_k? : Int) -> Array[SearchResult]

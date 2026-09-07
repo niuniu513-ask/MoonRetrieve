@@ -25,7 +25,7 @@
 - 上下文组装 `ContextBuilder`：token 预算控制、来源标注
 - 结果高亮 `highlight`：查询词自动标记 `**term**`
 - 文档删除与统计：`SearchIndex::remove` / `stats`、`Engine::remove_document` / `stats`
-- 一站式引擎 `Engine`：文档 → 分块 → 索引 → 检索
+- 一站式引擎 `Engine`：文档 → 分块 → 索引 → 检索，支持文档替换和 RAG 上下文构建
 - CLI：`index` / `query` / `context` / `stats` / `phrase` / `boolean` / `prefix`
 - 结果诊断 CLI：`snippet` 输出限定长度命中片段，`explain` 输出匹配词和覆盖情况
 
@@ -96,7 +96,7 @@ docs/                使用教程、申报书、差异化说明与自查清单
 ## 测试与构建
 
 ```bash
-moon test        # 100 个测试（native / wasm-gc / js 由 CI 覆盖）
+moon test        # 103 个测试（native / wasm-gc / js 由 CI 覆盖）
 moon check
 moon build --target wasm-gc
 moon bench       # 3 项基准（分词 / 建索引 / 检索）

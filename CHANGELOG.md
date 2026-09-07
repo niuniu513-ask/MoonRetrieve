@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased（2026-09-07）
+
+- 新增 `Engine::replace_document`，按原始文档 ID 原子替换旧分块，避免重复索引；
+- 新增 `Engine::build_context`，统一完成检索和 token 预算内的 RAG 上下文组装；
+- 新增文档替换与上下文构建回归测试。
+
 ## 0.5.0（2026-08-21）
 
 - 新增 Precision、Recall、F1、MRR、MAP、R-Precision 与覆盖率等检索评估指标；

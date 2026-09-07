@@ -26,6 +26,18 @@ pub fn Engine::add_document(
   }
 }
 
+/// 替换同一原始文档 ID 的全部旧分块，并写入新内容。
+/// 返回被删除的旧分块数量。
+pub fn Engine::replace_document(
+  self : Engine,
+  doc_id : String,
+  text : String,
+) -> Int {
+  let removed = self.remove_document(doc_id)
+  self.add_document(doc_id, text)
+  removed
+}
+
 ///|
 /// 批量添加文档。
 pub fn Engine::add_documents(
@@ -104,6 +116,18 @@ pub fn Engine::search_explained(
 ) -> Array[ResultExplanation] {
   let results = self.search(query, top_k~)
   explain_results(query, results, tokenizer=self.index.tokenizer)
+}
+
+/// 检索并按 token 预算生成可直接交给 LLM 的上下文。
+pub fn Engine::build_context(
+  self : Engine,
+  query : String,
+  top_k? : Int = 10,
+  max_tokens? : Int = 800,
+) -> String {
+  let results = self.search(query, top_k~)
+  let builder = ContextBuilder::new(max_tokens~)
+  builder.build(query, results)
 }
 
 ///|

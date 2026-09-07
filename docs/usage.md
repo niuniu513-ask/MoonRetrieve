@@ -56,12 +56,25 @@ println(prompt)
 
 `ContextBuilder` 会按 token 预算拼接带来源编号的资料，并附上“仅根据资料回答”的提示。
 
+也可以直接通过引擎完成检索和上下文组装：
+
+```moonbit
+let prompt = engine.build_context("RAG 是什么", top_k=3, max_tokens=500)
+```
+
 ## 5. 删除文档与统计
 
 ```moonbit
 engine.remove_document("guide.md")   // 按原始文档 ID 删除其全部分块
 let s = engine.stats()               // 分块数 / 词条数 / 总 token / 平均长度
 println("\{s.doc_count} \{s.term_count}")
+```
+
+如果文档内容更新，可以用 `replace_document` 原子替换旧分块，避免同一个文档 ID 在索引中重复：
+
+```moonbit
+let removed = engine.replace_document("guide.md", "更新后的文档内容")
+println("removed \{removed} old chunks")
 ```
 
 ## 5.1 短语检索

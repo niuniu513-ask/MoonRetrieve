@@ -37,3 +37,24 @@ test "engine returns snippets and relevance explanations" {
   let explanations = e.search_explained("MoonBit 编程", top_k=3)
   assert_true(explanations.length() == 1)
 }
+
+///|
+test "engine replaces all chunks for an existing document" {
+  let e = @MoonRetrieve.Engine::new()
+  e.add_document("guide", "旧版本内容。旧版本说明。")
+  let old_count = e.count()
+  let removed = e.replace_document("guide", "新版本内容。")
+  assert_true(removed == old_count)
+  assert_true(e.count() == 1)
+  assert_true(e.search("旧", top_k=3).is_empty())
+  assert_true(e.search("新", top_k=3).length() == 1)
+}
+
+///|
+test "engine builds bounded RAG context" {
+  let e = @MoonRetrieve.Engine::new()
+  e.add_document("guide", "MoonBit 是面向云边计算的编程语言。")
+  let context = e.build_context("MoonBit", top_k=1, max_tokens=100)
+  assert_true(context.contains("MoonBit"))
+  assert_true(context.contains("[1]"))
+}
