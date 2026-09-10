@@ -25,3 +25,17 @@ test "context respects token budget" {
   let ctx = cb.build("问题", results)
   assert_true(ctx.split("other.md").count() == 1)
 }
+
+///|
+test "diverse context keeps one chunk per source" {
+  let cb = @MoonRetrieve.ContextBuilder::new(max_tokens=100)
+  let results = [
+    @MoonRetrieve.SearchResult::new("guide.md#0", 3.0, "MoonBit 基础"),
+    @MoonRetrieve.SearchResult::new("guide.md#1", 2.0, "MoonBit 工具链"),
+    @MoonRetrieve.SearchResult::new("faq.md#0", 1.0, "RAG 检索"),
+  ]
+  let context = cb.build_diverse("MoonBit RAG", results, max_sources=2)
+  assert_true(context.contains("guide.md#0"))
+  assert_false(context.contains("guide.md#1"))
+  assert_true(context.contains("faq.md#0"))
+}

@@ -62,6 +62,16 @@ println(prompt)
 let prompt = engine.build_context("RAG 是什么", top_k=3, max_tokens=500)
 ```
 
+多文档知识库可以按来源去重，避免同一文档的多个分块占满上下文：
+
+```moonbit
+let prompt = engine.build_diverse_context(
+  "RAG 是什么",
+  top_k=3,
+  max_tokens=500,
+)
+```
+
 ## 5. 删除文档与统计
 
 ```moonbit

@@ -121,6 +121,7 @@ pub struct ContextBuilder {
   tokenizer : Tokenizer
 } derive(ToJson, @json.FromJson)
 pub fn ContextBuilder::build(Self, String, Array[SearchResult]) -> String
+pub fn ContextBuilder::build_diverse(Self, String, Array[SearchResult], max_sources? : Int) -> String
 pub fn ContextBuilder::new(max_tokens? : Int, tokenizer? : Tokenizer) -> Self
 
 pub struct Engine {
@@ -130,6 +131,7 @@ pub struct Engine {
 pub fn Engine::add_document(Self, String, String) -> Unit
 pub fn Engine::add_documents(Self, Array[(String, String)]) -> Unit
 pub fn Engine::build_context(Self, String, top_k? : Int, max_tokens? : Int) -> String
+pub fn Engine::build_diverse_context(Self, String, top_k? : Int, max_tokens? : Int) -> String
 pub fn Engine::count(Self) -> Int
 pub fn Engine::highlight(Self, String, String) -> String
 pub fn Engine::new(chunker? : Chunker, index? : SearchIndex) -> Self

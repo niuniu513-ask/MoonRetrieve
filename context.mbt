@@ -45,3 +45,15 @@ pub fn ContextBuilder::build(
   }
   sb.to_string()
 }
+
+///|
+/// 每个原始文档只保留最高分分块，再按 token 预算组装上下文。
+pub fn ContextBuilder::build_diverse(
+  self : ContextBuilder,
+  query : String,
+  results : Array[SearchResult],
+  max_sources? : Int = 10,
+) -> String {
+  let selected = deduplicate_by_source(results, limit=max_sources)
+  self.build(query, selected)
+}

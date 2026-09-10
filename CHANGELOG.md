@@ -1,10 +1,11 @@
 # Changelog
 
-## Unreleased（2026-09-07）
+## Unreleased（2026-09-10）
 
 - 新增 `Engine::replace_document`，按原始文档 ID 原子替换旧分块，避免重复索引；
 - 新增 `Engine::build_context`，统一完成检索和 token 预算内的 RAG 上下文组装；
 - 新增文档替换与上下文构建回归测试。
+- 新增 `ContextBuilder::build_diverse` / `Engine::build_diverse_context`，按原始文档去重检索结果，提升多来源 RAG 上下文覆盖度。
 
 ## 0.5.0（2026-08-21）
 

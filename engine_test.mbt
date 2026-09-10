@@ -58,3 +58,16 @@ test "engine builds bounded RAG context" {
   assert_true(context.contains("MoonBit"))
   assert_true(context.contains("[1]"))
 }
+
+///|
+test "engine builds context from distinct source documents" {
+  let chunker = @MoonRetrieve.Chunker::new(max_chars=8, overlap=0)
+  let e = @MoonRetrieve.Engine::new(chunker~)
+  e.add_document(
+    "guide", "MoonBit 文档第一段。MoonBit 文档第二段。",
+  )
+  e.add_document("faq", "MoonBit 常见问题。")
+  let context = e.build_diverse_context("MoonBit", top_k=2, max_tokens=100)
+  assert_true(context.contains("guide#"))
+  assert_true(context.contains("faq#"))
+}

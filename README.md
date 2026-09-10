@@ -22,7 +22,7 @@
 - 前缀检索 `search_prefix`：按词条前缀匹配
 - 向量索引 `VectorIndex`：余弦相似度检索
 - 混合融合 `rrf_fuse`：Reciprocal Rank Fusion
-- 上下文组装 `ContextBuilder`：token 预算控制、来源标注
+- 上下文组装 `ContextBuilder`：token 预算控制、来源标注、按来源去重
 - 结果高亮 `highlight`：查询词自动标记 `**term**`
 - 文档删除与统计：`SearchIndex::remove` / `stats`、`Engine::remove_document` / `stats`
 - 一站式引擎 `Engine`：文档 → 分块 → 索引 → 检索，支持文档替换和 RAG 上下文构建
@@ -96,7 +96,7 @@ docs/                使用教程、申报书、差异化说明与自查清单
 ## 测试与构建
 
 ```bash
-moon test        # 103 个测试（native / wasm-gc / js 由 CI 覆盖）
+moon test        # 105 个测试（native / wasm-gc / js 由 CI 覆盖）
 moon check
 moon build --target wasm-gc
 moon bench       # 3 项基准（分词 / 建索引 / 检索）
@@ -122,4 +122,4 @@ OSC 2026 申请人、仓库账号及历史 Git 作者身份说明见 [docs/PARTI
 
 ### 本期实质新增工作
 
-本期赛事周期内，MoonRetrieve 已完成面向可评估检索的实质功能扩展：新增检索评估指标（Precision、Recall、F1、MRR、MAP、R-Precision、覆盖率）、结构化查询解析、相关性解释、摘要与命中片段生成、Unicode 查询纠错与前缀补全，以及结果过滤、分页、去重、融合、分组和多样化；同步新增 100 项回归测试、`examples/quickstart` 可运行示例、CLI 冒烟测试和三项基准测试，并由 CI 覆盖 native / wasm-gc / js。对应实现和测试见 `evaluation.mbt`、`query.mbt`、`explain.mbt`、`summary.mbt`、`suggest.mbt`、`result_ops.mbt` 及其测试文件，主要变更可在提交 `661664e`、`e83cad6`、`24e8448` 中核验。
+本期赛事周期内，MoonRetrieve 已完成面向可评估检索的实质功能扩展：新增检索评估指标（Precision、Recall、F1、MRR、MAP、R-Precision、覆盖率）、结构化查询解析、相关性解释、摘要与命中片段生成、Unicode 查询纠错与前缀补全，以及结果过滤、分页、去重、融合、分组和多样化；进一步补充文档原子替换、引擎级 RAG 上下文构建和多来源去重上下文。项目现有 105 项回归测试、`examples/quickstart` 可运行示例、CLI 冒烟测试和三项基准测试，并由 CI 覆盖 native / wasm-gc / js。对应实现和测试见 `engine.mbt`、`context.mbt`、`evaluation.mbt`、`query.mbt`、`explain.mbt`、`summary.mbt`、`suggest.mbt`、`result_ops.mbt` 及其测试文件。
