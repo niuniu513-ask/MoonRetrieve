@@ -33,7 +33,7 @@
 - CLI：`index` / `query` / `context` / `evaluate` / `trace` / `stats` / `phrase` / `boolean` / `prefix`
 - 结果诊断 CLI：`snippet` 输出限定长度命中片段，`explain` 输出匹配词和覆盖情况
 
-完整的科研摘要检索场景与 300 题公开人工标注评测见 [SciFact 复现说明](docs/scifact.md)。它覆盖导入、查询、引用核对和错误分析；语料需从原始发布方下载，不随本仓库分发。
+完整的科研摘要检索场景与 300 题公开人工标注评测见 [SciFact 复现说明](docs/scifact.md)。本期 Linux native 实测 Recall@10 为 0.7533、MRR@10 为 0.5847；流程覆盖导入、查询、引用核对和错误分析。语料需从原始发布方下载，不随本仓库分发。
 
 ## 快速开始
 

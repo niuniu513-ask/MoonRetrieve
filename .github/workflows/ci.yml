@@ -65,6 +65,9 @@ jobs:
         run: |
           moon run cmd/main --target native -- evaluate _build/scifact/index.json _build/scifact/prepared/cases.json -k 10 --json > _build/scifact/report.json
           python3 scripts/check_scifact.py _build/scifact/report.json
+      - name: Check source citation for a labeled query
+        run: |
+          moon run cmd/main --target native -- context _build/scifact/index.json "1,000 genomes project enables mapping of genetic sequence variation consisting of rare variants with larger penetrance effects than common variants." -k 5 --tokens 2000 --diverse --json | jq -e 'any(.citations[]; .doc_id | startswith("14717500#")) and (.used_content_tokens <= 2000)'
       - uses: actions/upload-artifact@v4
         with:
           name: scifact-test-report

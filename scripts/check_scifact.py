@@ -15,6 +15,8 @@ def main():
         raise ValueError("invalid recall")
     if not 0.0 <= summary["mean_reciprocal_rank"] <= 1.0:
         raise ValueError("invalid MRR")
+    if summary["mean_recall"] < 0.74 or summary["mean_reciprocal_rank"] < 0.57:
+        raise ValueError("retrieval quality regressed below the 2026-09-24 baseline")
     print(json.dumps(summary, indent=2))
 
 
