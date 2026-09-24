@@ -107,14 +107,21 @@ pub struct Chunk {
   index : Int
   text : String
 } derive(Eq, ToJson, @debug.Debug, @json.FromJson)
+pub fn Chunk::equal(Self, Self) -> Bool
+pub fn Chunk::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
 pub fn Chunk::new(String, Int, String) -> Self
+pub fn Chunk::not_equal(Self, Self) -> Bool
+pub fn Chunk::to_json(Self) -> Json
+pub fn Chunk::to_repr(Self) -> @debug.Repr
 
 pub struct Chunker {
   max_chars : Int
   overlap : Int
 } derive(ToJson, @json.FromJson)
 pub fn Chunker::chunk(Self, String, String) -> Array[Chunk]
+pub fn Chunker::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
 pub fn Chunker::new(max_chars? : Int, overlap? : Int) -> Self
+pub fn Chunker::to_json(Self) -> Json
 
 pub struct ContextBuilder {
   max_tokens : Int
@@ -122,7 +129,9 @@ pub struct ContextBuilder {
 } derive(ToJson, @json.FromJson)
 pub fn ContextBuilder::build(Self, String, Array[SearchResult]) -> String
 pub fn ContextBuilder::build_diverse(Self, String, Array[SearchResult], max_sources? : Int) -> String
+pub fn ContextBuilder::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
 pub fn ContextBuilder::new(max_tokens? : Int, tokenizer? : Tokenizer) -> Self
+pub fn ContextBuilder::to_json(Self) -> Json
 
 pub struct Engine {
   chunker : Chunker
@@ -133,6 +142,7 @@ pub fn Engine::add_documents(Self, Array[(String, String)]) -> Unit
 pub fn Engine::build_context(Self, String, top_k? : Int, max_tokens? : Int) -> String
 pub fn Engine::build_diverse_context(Self, String, top_k? : Int, max_tokens? : Int) -> String
 pub fn Engine::count(Self) -> Int
+pub fn Engine::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
 pub fn Engine::highlight(Self, String, String) -> String
 pub fn Engine::new(chunker? : Chunker, index? : SearchIndex) -> Self
 pub fn Engine::remove_document(Self, String) -> Int
@@ -145,6 +155,7 @@ pub fn Engine::search_phrase(Self, String, top_k? : Int) -> Array[SearchResult]
 pub fn Engine::search_prefix(Self, String, top_k? : Int) -> Array[SearchResult]
 pub fn Engine::search_snippets(Self, String, top_k? : Int, max_chars? : Int) -> Array[SearchResult]
 pub fn Engine::stats(Self) -> IndexStats
+pub fn Engine::to_json(Self) -> Json
 pub fn Engine::try_load(String) -> Result[Self, String]
 
 pub struct EvaluationSummary {
@@ -156,6 +167,7 @@ pub struct EvaluationSummary {
   mean_average_precision : Double
   hit_rate : Double
 } derive(@debug.Debug)
+pub fn EvaluationSummary::to_repr(Self) -> @debug.Repr
 
 pub struct IndexStats {
   doc_count : Int
@@ -163,18 +175,29 @@ pub struct IndexStats {
   total_tokens : Int
   avg_doc_len : Double
 } derive(ToJson, @debug.Debug, @json.FromJson)
+pub fn IndexStats::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
 pub fn IndexStats::new(Int, Int, Int, Double) -> Self
+pub fn IndexStats::to_json(Self) -> Json
+pub fn IndexStats::to_repr(Self) -> @debug.Repr
 
 pub struct Keyword {
   term : String
   count : Int
   frequency : Double
 } derive(Eq, @debug.Debug)
+pub fn Keyword::equal(Self, Self) -> Bool
+pub fn Keyword::not_equal(Self, Self) -> Bool
+pub fn Keyword::to_repr(Self) -> @debug.Repr
 
 pub struct Posting {
   doc_id : Int
   tf : Int
 } derive(Eq, ToJson, @debug.Debug, @json.FromJson)
+pub fn Posting::equal(Self, Self) -> Bool
+pub fn Posting::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
+pub fn Posting::not_equal(Self, Self) -> Bool
+pub fn Posting::to_json(Self) -> Json
+pub fn Posting::to_repr(Self) -> @debug.Repr
 
 pub struct QueryClause {
   value : String
@@ -184,23 +207,32 @@ pub struct QueryClause {
   phrase : Bool
   prefix : Bool
 } derive(Eq, @debug.Debug)
+pub fn QueryClause::equal(Self, Self) -> Bool
+pub fn QueryClause::not_equal(Self, Self) -> Bool
+pub fn QueryClause::to_repr(Self) -> @debug.Repr
 
 pub struct QueryPlan {
   original : String
   clauses : Array[QueryClause]
 } derive(Eq, @debug.Debug)
+pub fn QueryPlan::equal(Self, Self) -> Bool
 pub fn QueryPlan::excluded_values(Self) -> Array[String]
 pub fn QueryPlan::has_field(Self, String) -> Bool
 pub fn QueryPlan::matches(Self, String, tokenizer? : Tokenizer) -> Bool
+pub fn QueryPlan::not_equal(Self, Self) -> Bool
 pub fn QueryPlan::positive_values(Self) -> Array[String]
 pub fn QueryPlan::required_values(Self) -> Array[String]
 pub fn QueryPlan::search_text(Self) -> String
+pub fn QueryPlan::to_repr(Self) -> @debug.Repr
 
 pub struct QuerySuggestion {
   value : String
   distance : Int
   similarity : Double
 } derive(Eq, @debug.Debug)
+pub fn QuerySuggestion::equal(Self, Self) -> Bool
+pub fn QuerySuggestion::not_equal(Self, Self) -> Bool
+pub fn QuerySuggestion::to_repr(Self) -> @debug.Repr
 
 pub struct ResultExplanation {
   doc_id : String
@@ -211,6 +243,7 @@ pub struct ResultExplanation {
   total_required : Int
   token_overlap : Double
 } derive(@debug.Debug)
+pub fn ResultExplanation::to_repr(Self) -> @debug.Repr
 
 pub struct ResultGroup {
   doc_id : String
@@ -219,6 +252,7 @@ pub struct ResultGroup {
   chunk_count : Int
   chunks : Array[SearchResult]
 } derive(@debug.Debug)
+pub fn ResultGroup::to_repr(Self) -> @debug.Repr
 
 pub struct RetrievalMetrics {
   cutoff : Int
@@ -233,12 +267,18 @@ pub struct RetrievalMetrics {
   average_precision : Double
   r_precision : Double
 } derive(@debug.Debug)
+pub fn RetrievalMetrics::to_repr(Self) -> @debug.Repr
 
 pub struct ScoredDoc {
   id : String
   score : Double
 } derive(Eq, ToJson, @debug.Debug, @json.FromJson)
+pub fn ScoredDoc::equal(Self, Self) -> Bool
+pub fn ScoredDoc::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
 pub fn ScoredDoc::new(String, Double) -> Self
+pub fn ScoredDoc::not_equal(Self, Self) -> Bool
+pub fn ScoredDoc::to_json(Self) -> Json
+pub fn ScoredDoc::to_repr(Self) -> @debug.Repr
 
 pub struct SearchIndex {
   mut ids : Array[String]
@@ -254,6 +294,7 @@ pub struct SearchIndex {
 } derive(ToJson, @json.FromJson)
 pub fn SearchIndex::add(Self, String, String) -> Unit
 pub fn SearchIndex::count(Self) -> Int
+pub fn SearchIndex::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
 pub fn SearchIndex::new(k1? : Double, b? : Double, tokenizer? : Tokenizer) -> Self
 pub fn SearchIndex::remove(Self, String) -> Bool
 pub fn SearchIndex::remove_if(Self, (String) -> Bool) -> Int
@@ -263,6 +304,7 @@ pub fn SearchIndex::search_boolean(Self, String, top_k? : Int) -> Array[SearchRe
 pub fn SearchIndex::search_phrase(Self, String, top_k? : Int) -> Array[SearchResult]
 pub fn SearchIndex::search_prefix(Self, String, top_k? : Int) -> Array[SearchResult]
 pub fn SearchIndex::stats(Self) -> IndexStats
+pub fn SearchIndex::to_json(Self) -> Json
 pub fn SearchIndex::try_load(String) -> Result[Self, String]
 
 pub struct SearchResult {
@@ -270,7 +312,12 @@ pub struct SearchResult {
   score : Double
   text : String
 } derive(Eq, ToJson, @debug.Debug, @json.FromJson)
+pub fn SearchResult::equal(Self, Self) -> Bool
+pub fn SearchResult::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
 pub fn SearchResult::new(String, Double, String) -> Self
+pub fn SearchResult::not_equal(Self, Self) -> Bool
+pub fn SearchResult::to_json(Self) -> Json
+pub fn SearchResult::to_repr(Self) -> @debug.Repr
 
 pub struct TextSummary {
   text : String
@@ -278,6 +325,9 @@ pub struct TextSummary {
   selected_sentences : Int
   estimated_tokens : Int
 } derive(Eq, @debug.Debug)
+pub fn TextSummary::equal(Self, Self) -> Bool
+pub fn TextSummary::not_equal(Self, Self) -> Bool
+pub fn TextSummary::to_repr(Self) -> @debug.Repr
 
 pub struct Tokenizer {
   min_token_len : Int
@@ -286,7 +336,9 @@ pub struct Tokenizer {
   stopwords : Array[String]
 } derive(ToJson, @json.FromJson)
 pub fn Tokenizer::estimate_tokens(Self, String) -> Int
+pub fn Tokenizer::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
 pub fn Tokenizer::new(min_token_len? : Int, bigram_cjk? : Bool, stem_english? : Bool, stopwords? : Array[String]) -> Self
+pub fn Tokenizer::to_json(Self) -> Json
 pub fn Tokenizer::tokenize(Self, String) -> Array[String]
 
 pub struct VectorIndex {
@@ -295,8 +347,10 @@ pub struct VectorIndex {
 } derive(ToJson, @json.FromJson)
 pub fn VectorIndex::add(Self, String, Array[Double]) -> Unit
 pub fn VectorIndex::count(Self) -> Int
+pub fn VectorIndex::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
 pub fn VectorIndex::new() -> Self
 pub fn VectorIndex::search(Self, Array[Double], top_k? : Int) -> Array[ScoredDoc]
+pub fn VectorIndex::to_json(Self) -> Json
 
 // Type aliases
 

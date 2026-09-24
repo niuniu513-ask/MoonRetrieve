@@ -32,7 +32,7 @@
 
 ## 快速开始
 
-环境要求：MoonBit 0.1.20260807+；native 目标需要 C 编译器（Windows 用 MSVC）。
+环境要求：MoonBit 0.1.20260920+；native 目标需要 C 编译器（Windows 用 MSVC）。
 
 ```bash
 # 添加依赖

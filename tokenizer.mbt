@@ -19,7 +19,7 @@ pub fn Tokenizer::new(
   stem_english? : Bool = false,
   stopwords? : Array[String] = [],
 ) -> Tokenizer {
-  { min_token_len, bigram_cjk, stem_english, stopwords }
+  { min_token_len, bigram_cjk, stem_english, stopwords, }
 }
 
 ///|
@@ -129,15 +129,15 @@ fn ascii_lower(c : Char) -> Char {
 fn stem_word(w : String) -> String {
   let n = w.length()
   if n > 5 && w.has_suffix("ing") {
-    w.sub(start=0, end=n - 3).to_owned()
+    w.exact_view(start=0, end=n - 3).to_owned()
   } else if n > 4 && w.has_suffix("ed") {
-    w.sub(start=0, end=n - 2).to_owned()
+    w.exact_view(start=0, end=n - 2).to_owned()
   } else if n > 4 && w.has_suffix("ly") {
-    w.sub(start=0, end=n - 2).to_owned()
+    w.exact_view(start=0, end=n - 2).to_owned()
   } else if n > 4 && w.has_suffix("es") {
-    w.sub(start=0, end=n - 2).to_owned()
+    w.exact_view(start=0, end=n - 2).to_owned()
   } else if n > 3 && w.has_suffix("s") && !w.has_suffix("ss") {
-    w.sub(start=0, end=n - 1).to_owned()
+    w.exact_view(start=0, end=n - 1).to_owned()
   } else {
     w
   }

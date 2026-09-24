@@ -58,7 +58,7 @@ pub fn SearchIndex::add(self : SearchIndex, id : String, text : String) -> Unit 
   for kv in tf.iter() {
     let (term, count) = kv
     let postings = self.postings.get_or_default(term, [])
-    postings.push({ doc_id, tf: count })
+    postings.push({ doc_id, tf: count, })
     self.postings[term] = postings
   }
   self.total_docs = self.total_docs + 1
@@ -105,7 +105,7 @@ pub fn SearchIndex::search_phrase(
   let out : Array[SearchResult] = []
   for i = 0; i < scored.length() && i < top_k; i = i + 1 {
     let (doc, score) = scored[i]
-    out.push({ doc_id: self.ids[doc], score, text: self.texts[doc] })
+    out.push({ doc_id: self.ids[doc], score, text: self.texts[doc], })
   }
   out
 }
@@ -139,7 +139,7 @@ pub fn SearchIndex::search_boolean(
       continue
     }
     if p.has_prefix("-") {
-      let t = p.sub(start=1, end=p.length()).to_owned()
+      let t = p.exact_view(start=1, end=p.length()).to_owned()
       if !t.is_empty() {
         not.push(t)
       }
@@ -175,7 +175,7 @@ pub fn SearchIndex::search_boolean(
   let out : Array[SearchResult] = []
   for i = 0; i < scored.length() && i < top_k; i = i + 1 {
     let (doc, score) = scored[i]
-    out.push({ doc_id: self.ids[doc], score, text: self.texts[doc] })
+    out.push({ doc_id: self.ids[doc], score, text: self.texts[doc], })
   }
   out
 }
@@ -254,7 +254,7 @@ fn SearchIndex::rank_postings(
   let out : Array[SearchResult] = []
   for i = 0; i < scored.length() && i < top_k; i = i + 1 {
     let (doc, score) = scored[i]
-    out.push({ doc_id: self.ids[doc], score, text: self.texts[doc] })
+    out.push({ doc_id: self.ids[doc], score, text: self.texts[doc], })
   }
   out
 }
@@ -352,7 +352,7 @@ fn SearchIndex::rebuild_postings(self : SearchIndex) -> Unit {
     for kv in tf.iter() {
       let (term, count) = kv
       let postings = self.postings.get_or_default(term, [])
-      postings.push({ doc_id: i, tf: count })
+      postings.push({ doc_id: i, tf: count, })
       self.postings[term] = postings
     }
   }

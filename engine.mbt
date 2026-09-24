@@ -10,7 +10,7 @@ pub fn Engine::new(
   chunker? : Chunker = Chunker::new(),
   index? : SearchIndex = SearchIndex::new(),
 ) -> Engine {
-  { chunker, index }
+  { chunker, index, }
 }
 
 ///|

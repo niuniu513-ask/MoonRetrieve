@@ -6,7 +6,7 @@
 moon add niuniu513-ask/MoonRetrieve
 ```
 
-环境要求：MoonBit 0.1.20260807+。
+环境要求：MoonBit 0.1.20260920+。
 
 ## 1. 分词与分块
 

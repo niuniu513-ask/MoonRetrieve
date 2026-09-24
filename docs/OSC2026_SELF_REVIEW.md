@@ -39,5 +39,5 @@
 
 ## 可选环境建议
 
-- 当前 MoonBit 工具链版本满足要求：`moon 0.1.20260807`，`moonc v0.10.7`。
+- 当前 MoonBit 工具链版本满足要求：`moon 0.1.20260920`，`moonc v0.10.14`。
 - 当前环境未发现 `moonbitlang/skills` 本地技能目录。后续开发 MoonBit 项目时，建议安装以获得更贴近 MoonBit 包结构、测试和工具链的辅助。

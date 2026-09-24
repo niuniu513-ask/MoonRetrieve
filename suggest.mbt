@@ -200,7 +200,7 @@ pub fn correct_query(
   vocabulary : Array[String],
   max_distance? : Int = 2,
 ) -> String {
-  let builder = StringBuilder::new()
+  let builder = StringBuilder()
   let mut first = true
   for part in query.split(" ") {
     let word = part.trim().to_owned()

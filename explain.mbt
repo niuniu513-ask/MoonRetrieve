@@ -64,7 +64,7 @@ pub fn explain_results(
 
 ///|
 pub fn explanation_summary(explanation : ResultExplanation) -> String {
-  let builder = StringBuilder::new()
+  let builder = StringBuilder()
   builder.write_string(explanation.doc_id)
   builder.write_string(": matched ")
   builder.write_string(explanation.matched_required.to_string())

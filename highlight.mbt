@@ -20,7 +20,7 @@ pub fn highlight(
   while pos < text.length() {
     let mut best : (Int, Int)? = None
     for term in terms {
-      match text.sub(start=pos, end=text.length()).find(term) {
+      match text.exact_view(start=pos, end=text.length()).find(term) {
         None => continue
         Some(off) => {
           let s = pos + off
@@ -54,16 +54,16 @@ pub fn highlight(
       }
     }
   }
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   let mut last = 0
   for r in merged {
     let (s, e) = r
-    sb.write_string(text.sub(start=last, end=s).to_owned())
+    sb.write_string(text.exact_view(start=last, end=s).to_owned())
     sb.write_string("**")
-    sb.write_string(text.sub(start=s, end=e).to_owned())
+    sb.write_string(text.exact_view(start=s, end=e).to_owned())
     sb.write_string("**")
     last = e
   }
-  sb.write_string(text.sub(start=last, end=text.length()).to_owned())
+  sb.write_string(text.exact_view(start=last, end=text.length()).to_owned())
   sb.to_string()
 }

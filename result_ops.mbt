@@ -11,14 +11,14 @@ pub struct ResultGroup {
 ///|
 pub fn source_doc_id(chunk_id : String) -> String {
   match chunk_id.find("#") {
-    Some(index) => chunk_id.sub(start=0, end=index).to_owned()
+    Some(index) => chunk_id.exact_view(start=0, end=index).to_owned()
     None => chunk_id
   }
 }
 
 ///|
 fn clone_result(result : SearchResult, score : Double) -> SearchResult {
-  { doc_id: result.doc_id, score, text: result.text }
+  { doc_id: result.doc_id, score, text: result.text, }
 }
 
 ///|
@@ -209,7 +209,7 @@ pub fn weighted_fuse_results(
   let out : Array[SearchResult] = []
   for pair in scores.iter() {
     let (id, score) = pair
-    out.push({ doc_id: id, score, text: texts.get_or_default(id, "") })
+    out.push({ doc_id: id, score, text: texts.get_or_default(id, ""), })
   }
   paginate_results(sort_results(out), limit~)
 }

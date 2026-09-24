@@ -9,7 +9,7 @@ pub struct Chunker {
 pub fn Chunker::new(max_chars? : Int = 800, overlap? : Int = 80) -> Chunker {
   let m = if max_chars < 1 { 1 } else { max_chars }
   let o = if overlap < 0 { 0 } else if overlap >= m { m / 2 } else { overlap }
-  { max_chars: m, overlap: o }
+  { max_chars: m, overlap: o, }
 }
 
 ///|
@@ -38,7 +38,7 @@ pub fn Chunker::chunk(
         current_len = 0
       }
       for piece in split_long(para, self.max_chars) {
-        chunks.push({ doc_id, index, text: piece })
+        chunks.push({ doc_id, index, text: piece, })
         index = index + 1
       }
       continue
@@ -50,7 +50,10 @@ pub fn Chunker::chunk(
       if self.overlap > 0 && last_text.length() > self.overlap {
         current.push(
           last_text
-          .sub(start=last_text.length() - self.overlap, end=last_text.length())
+          .exact_view(
+            start=last_text.length() - self.overlap,
+            end=last_text.length(),
+          )
           .to_owned(),
         )
         current_len = self.overlap
@@ -74,7 +77,7 @@ fn flush_chunk(
   lines : Array[String],
   index : Int,
 ) -> Int {
-  chunks.push({ doc_id, index, text: lines.join("\n") })
+  chunks.push({ doc_id, index, text: lines.join("\n"), })
   index + 1
 }
 
@@ -85,7 +88,9 @@ fn split_long(text : String, max : Int) -> Array[String] {
   let mut i = 0
   while i < chars.length() {
     let end = if i + max < chars.length() { i + max } else { chars.length() }
-    out.push(StringView::from_iter(chars.view(start=i, end~).iter()).to_owned())
+    out.push(
+      StringView::from_iter(chars.exact_view(start=i, end~).iter()).to_owned(),
+    )
     i = end
   }
   out

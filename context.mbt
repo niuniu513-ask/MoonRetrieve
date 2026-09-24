@@ -10,7 +10,7 @@ pub fn ContextBuilder::new(
   max_tokens? : Int = 800,
   tokenizer? : Tokenizer = Tokenizer::new(),
 ) -> ContextBuilder {
-  { max_tokens, tokenizer }
+  { max_tokens, tokenizer, }
 }
 
 ///|
@@ -20,7 +20,7 @@ pub fn ContextBuilder::build(
   query : String,
   results : Array[SearchResult],
 ) -> String {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   sb.write_string(
     "请仅根据以下资料回答问题，不要编造资料中没有的内容。\n\n",
   )

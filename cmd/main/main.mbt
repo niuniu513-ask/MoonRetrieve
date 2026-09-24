@@ -125,7 +125,7 @@ async fn run_query(args : Array[String]) -> Unit {
     } else {
       let n = r.text.length()
       let end = if n > 300 { 300 } else { n }
-      println(r.text.sub(start=0, end~))
+      println(r.text.exact_view(start=0, end~))
     }
   }
 }
@@ -149,7 +149,7 @@ async fn run_phrase(args : Array[String]) -> Unit {
     } else {
       let n = r.text.length()
       let end = if n > 300 { 300 } else { n }
-      println(r.text.sub(start=0, end~))
+      println(r.text.exact_view(start=0, end~))
     }
   }
 }
@@ -169,7 +169,7 @@ async fn run_boolean(args : Array[String]) -> Unit {
     println("\n[\{r.doc_id}] score=\{r.score}")
     let n = r.text.length()
     let end = if n > 300 { 300 } else { n }
-    println(r.text.sub(start=0, end~))
+    println(r.text.exact_view(start=0, end~))
   }
 }
 
@@ -188,7 +188,7 @@ async fn run_prefix(args : Array[String]) -> Unit {
     println("\n[\{r.doc_id}] score=\{r.score}")
     let n = r.text.length()
     let end = if n > 300 { 300 } else { n }
-    println(r.text.sub(start=0, end~))
+    println(r.text.exact_view(start=0, end~))
   }
 }
 

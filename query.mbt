@@ -48,7 +48,7 @@ fn raw_query_clauses(query : String) -> Result[Array[RawClause], String] {
       }
     } else if (char == ' ' || char == '\t' || char == '\n') && !quoted {
       if !current.is_empty() {
-        raw.push({ value: chars_to_string(current), phrase: clause_phrase })
+        raw.push({ value: chars_to_string(current), phrase: clause_phrase, })
         current.clear()
         clause_phrase = false
       }
@@ -60,7 +60,7 @@ fn raw_query_clauses(query : String) -> Result[Array[RawClause], String] {
     return Err("unterminated quoted phrase")
   }
   if !current.is_empty() {
-    raw.push({ value: chars_to_string(current), phrase: clause_phrase })
+    raw.push({ value: chars_to_string(current), phrase: clause_phrase, })
   }
   Ok(raw)
 }
@@ -70,8 +70,10 @@ fn parse_field(value : String) -> (String?, String) {
   match value.find(":") {
     None => (None, value)
     Some(index) => {
-      let field = value.sub(start=0, end=index).to_owned()
-      let rest = value.sub(start=index + 1, end=value.length()).to_owned()
+      let field = value.exact_view(start=0, end=index).to_owned()
+      let rest = value
+        .exact_view(start=index + 1, end=value.length())
+        .to_owned()
       if field.is_empty() || rest.is_empty() {
         (None, value)
       } else {
@@ -88,10 +90,10 @@ fn parse_raw_clause(raw : RawClause) -> Result[QueryClause, String] {
   let mut excluded = false
   if value.has_prefix("+") {
     required = true
-    value = value.sub(start=1, end=value.length()).to_owned()
+    value = value.exact_view(start=1, end=value.length()).to_owned()
   } else if value.has_prefix("-") {
     excluded = true
-    value = value.sub(start=1, end=value.length()).to_owned()
+    value = value.exact_view(start=1, end=value.length()).to_owned()
   }
   if value.is_empty() {
     return Err("query modifier requires a value")
@@ -101,7 +103,7 @@ fn parse_raw_clause(raw : RawClause) -> Result[QueryClause, String] {
   let mut prefix = false
   if value.has_suffix("*") {
     prefix = true
-    value = value.sub(start=0, end=value.length() - 1).to_owned()
+    value = value.exact_view(start=0, end=value.length() - 1).to_owned()
   }
   if value.is_empty() {
     return Err("prefix operator requires a value")
@@ -109,7 +111,7 @@ fn parse_raw_clause(raw : RawClause) -> Result[QueryClause, String] {
   if value.contains("*") {
     return Err("wildcard is supported only at the end of a clause")
   }
-  Ok({ value, field, required, excluded, phrase: raw.phrase, prefix })
+  Ok({ value, field, required, excluded, phrase: raw.phrase, prefix, })
 }
 
 ///|
@@ -137,7 +139,7 @@ pub fn parse_query(query : String) -> Result[QueryPlan, String] {
       if clauses.is_empty() {
         Err("query must contain at least one clause")
       } else {
-        Ok({ original: trimmed, clauses })
+        Ok({ original: trimmed, clauses, })
       }
     }
   }
@@ -178,7 +180,7 @@ pub fn QueryPlan::required_values(self : QueryPlan) -> Array[String] {
 
 ///|
 pub fn QueryPlan::search_text(self : QueryPlan) -> String {
-  let builder = StringBuilder::new()
+  let builder = StringBuilder()
   let mut first = true
   for value in self.positive_values() {
     if !first {
@@ -266,7 +268,7 @@ pub fn filter_with_query_plan(
 
 ///|
 pub fn format_query_plan(plan : QueryPlan) -> String {
-  let builder = StringBuilder::new()
+  let builder = StringBuilder()
   for i = 0; i < plan.clauses.length(); i = i + 1 {
     if i > 0 {
       builder.write_string(" ")

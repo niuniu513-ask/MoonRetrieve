@@ -7,7 +7,7 @@ pub struct VectorIndex {
 
 ///|
 pub fn VectorIndex::new() -> VectorIndex {
-  { items: [], vectors: [] }
+  { items: [], vectors: [], }
 }
 
 ///|
@@ -17,7 +17,7 @@ pub fn VectorIndex::add(
   id : String,
   vector : Array[Double],
 ) -> Unit {
-  self.items.push({ id, score: 0.0 })
+  self.items.push({ id, score: 0.0, })
   self.vectors.push(vector)
 }
 
@@ -44,7 +44,7 @@ pub fn VectorIndex::search(
   for i = 0; i < scored.length() && i < top_k; i = i + 1 {
     let (id, score) = scored[i]
     if score > 0.0 {
-      out.push({ id, score })
+      out.push({ id, score, })
     }
   }
   out
@@ -113,7 +113,7 @@ pub fn rrf_fuse(
   let out : Array[ScoredDoc] = []
   for i = 0; i < arr.length() && i < top_k; i = i + 1 {
     let (id, score) = arr[i]
-    out.push({ id, score })
+    out.push({ id, score, })
   }
   out
 }

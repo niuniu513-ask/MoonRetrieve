@@ -158,7 +158,7 @@ pub fn summarize_text(
     selected.push(ranked[i].0)
   }
   selected.sort()
-  let builder = StringBuilder::new()
+  let builder = StringBuilder()
   for i = 0; i < selected.length(); i = i + 1 {
     if i > 0 {
       builder.write_string(" ")
@@ -226,11 +226,11 @@ pub fn result_snippet(
     start = text.length() - max_chars
   }
   let end = start + max_chars
-  let builder = StringBuilder::new()
+  let builder = StringBuilder()
   if start > 0 {
     builder.write_string("...")
   }
-  builder.write_string(text.sub(start~, end~).to_owned())
+  builder.write_string(text.exact_view(start~, end~).to_owned())
   if end < text.length() {
     builder.write_string("...")
   }

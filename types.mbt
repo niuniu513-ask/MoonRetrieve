@@ -8,7 +8,7 @@ pub struct Chunk {
 
 ///|
 pub fn Chunk::new(doc_id : String, index : Int, text : String) -> Chunk {
-  { doc_id, index, text }
+  { doc_id, index, text, }
 }
 
 ///|
@@ -25,7 +25,7 @@ pub fn SearchResult::new(
   score : Double,
   text : String,
 ) -> SearchResult {
-  { doc_id, score, text }
+  { doc_id, score, text, }
 }
 
 ///|
@@ -37,7 +37,7 @@ pub struct ScoredDoc {
 
 ///|
 pub fn ScoredDoc::new(id : String, score : Double) -> ScoredDoc {
-  { id, score }
+  { id, score, }
 }
 
 ///|
@@ -56,5 +56,5 @@ pub fn IndexStats::new(
   total_tokens : Int,
   avg_doc_len : Double,
 ) -> IndexStats {
-  { doc_count, term_count, total_tokens, avg_doc_len }
+  { doc_count, term_count, total_tokens, avg_doc_len, }
 }
