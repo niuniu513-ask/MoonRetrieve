@@ -17,6 +17,7 @@
 - 分词器 `Tokenizer`：英文/中文/日文、N-gram、停用词、词干化
 - 分块器 `Chunker`：按段落切分、块间重叠、超长段落硬切
 - BM25 索引 `SearchIndex`：增量建索引、Top-K 检索、JSON 持久化
+- 倒排驱动 BM25：只为命中文档计分，适合本地较大文档集；[2,000 文档基准与复现方法](docs/performance.md)
 - 短语检索 `search_phrase`：查询短语按原文顺序连续出现
 - 布尔检索 `search_boolean`：AND / OR / `-term` 排除
 - 前缀检索 `search_prefix`：按词条前缀匹配
@@ -96,10 +97,10 @@ docs/                使用教程、申报书、差异化说明与自查清单
 ## 测试与构建
 
 ```bash
-moon test        # 105 个测试（native / wasm-gc / js 由 CI 覆盖）
+moon test        # 109 个测试（native / wasm-gc / js 由 CI 覆盖）
 moon check
 moon build --target wasm-gc
-moon bench       # 3 项基准（分词 / 建索引 / 检索）
+moon bench       # 5 项基准（分词 / 建索引 / 小集合与 2,000 文档检索）
 ```
 
 ## 最小示例
@@ -122,4 +123,4 @@ OSC 2026 申请人、仓库账号及历史 Git 作者身份说明见 [docs/PARTI
 
 ### 本期实质新增工作
 
-本期赛事周期内，MoonRetrieve 已完成面向可评估检索的实质功能扩展：新增检索评估指标（Precision、Recall、F1、MRR、MAP、R-Precision、覆盖率）、结构化查询解析、相关性解释、摘要与命中片段生成、Unicode 查询纠错与前缀补全，以及结果过滤、分页、去重、融合、分组和多样化；进一步补充文档原子替换、引擎级 RAG 上下文构建和多来源去重上下文。项目现有 105 项回归测试、`examples/quickstart` 可运行示例、CLI 冒烟测试和三项基准测试，并由 CI 覆盖 native / wasm-gc / js。对应实现和测试见 `engine.mbt`、`context.mbt`、`evaluation.mbt`、`query.mbt`、`explain.mbt`、`summary.mbt`、`suggest.mbt`、`result_ops.mbt` 及其测试文件。
+本期赛事周期内，MoonRetrieve 已完成面向可评估检索的实质功能扩展：新增检索评估指标（Precision、Recall、F1、MRR、MAP、R-Precision、覆盖率）、结构化查询解析、相关性解释、摘要与命中片段生成、Unicode 查询纠错与前缀补全，以及结果过滤、分页、去重、融合、分组和多样化；进一步补充文档原子替换、引擎级 RAG 上下文构建和多来源去重上下文。本次将普通与前缀检索改为倒排驱动计分，并提供 2,000 文档基准，稀有词查询在同一 wasm-gc 环境下从约 62.8 µs 降至 0.45 µs，常见词从约 1.15 ms 降至 99 µs。项目现有 109 项回归测试、`examples/quickstart` 可运行示例、CLI 冒烟测试和五项基准测试，并由 CI 覆盖 native / wasm-gc / js。对应实现和测试见 `index.mbt`、`engine.mbt`、`context.mbt`、`evaluation.mbt`、`query.mbt`、`explain.mbt`、`summary.mbt`、`suggest.mbt`、`result_ops.mbt` 及其测试文件。

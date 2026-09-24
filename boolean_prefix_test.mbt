@@ -61,3 +61,15 @@ test "engine prefix search" {
   assert_true(hits.length() == 1)
   assert_true(hits[0].doc_id == "d1#0")
 }
+
+///|
+test "prefix ranking is deterministic and bounded" {
+  let idx = @MoonRetrieve.SearchIndex::new()
+  idx.add("first", "moonbit")
+  idx.add("second", "moonbit")
+  idx.add("other", "banana")
+  let hits = idx.search_prefix("moon", top_k=1)
+  assert_eq(hits.length(), 1)
+  assert_eq(hits[0].doc_id, "first")
+  assert_true(idx.search_prefix("moon", top_k=0).is_empty())
+}

@@ -31,3 +31,26 @@ test (it : @bench.T) {
   }
   it.bench(fn() { ignore(e.search("RAG 检索", top_k=10)) })
 }
+
+///|
+test (it : @bench.T) {
+  let index = @MoonRetrieve.SearchIndex::new()
+  for i = 0; i < 2000; i = i + 1 {
+    let text = if i == 1999 {
+      "moonbit retrieval raretarget"
+    } else {
+      "moonbit retrieval document " + i.to_string()
+    }
+    index.add("doc-" + i.to_string(), text)
+  }
+  it.bench(fn() { ignore(index.search("raretarget", top_k=10)) })
+}
+
+///|
+test (it : @bench.T) {
+  let index = @MoonRetrieve.SearchIndex::new()
+  for i = 0; i < 2000; i = i + 1 {
+    index.add("doc-" + i.to_string(), "moonbit retrieval " + i.to_string())
+  }
+  it.bench(fn() { ignore(index.search("moonbit", top_k=10)) })
+}

@@ -73,31 +73,7 @@ pub fn SearchIndex::search(
   query : String,
   top_k? : Int = 10,
 ) -> Array[SearchResult] {
-  let q_tokens = self.tokenizer.tokenize(query)
-  let unique = unique_tokens(q_tokens)
-  if unique.is_empty() || self.total_docs == 0 {
-    return []
-  }
-  let scores : Array[(Int, Double)] = []
-  for i = 0; i < self.total_docs; i = i + 1 {
-    scores.push((i, self.score_doc(unique, i)))
-  }
-  scores.sort_by(fn(a, b) {
-    let cmp = b.1.compare(a.1)
-    if cmp != 0 {
-      cmp
-    } else {
-      a.0.compare(b.0)
-    }
-  })
-  let out : Array[SearchResult] = []
-  for i = 0; i < scores.length() && i < top_k; i = i + 1 {
-    let (doc, score) = scores[i]
-    if score > 0.0 {
-      out.push({ doc_id: self.ids[doc], score, text: self.texts[doc] })
-    }
-  }
-  out
+  self.rank_postings(unique_tokens(self.tokenizer.tokenize(query)), top_k)
 }
 
 ///|
@@ -211,7 +187,7 @@ pub fn SearchIndex::search_prefix(
   prefix : String,
   top_k? : Int = 10,
 ) -> Array[SearchResult] {
-  if prefix.is_empty() || self.total_docs == 0 {
+  if prefix.is_empty() || top_k <= 0 || self.total_docs == 0 {
     return []
   }
   let terms : Array[String] = []
@@ -224,11 +200,47 @@ pub fn SearchIndex::search_prefix(
   if terms.is_empty() {
     return []
   }
+  self.rank_postings(terms, top_k)
+}
+
+///|
+/// Accumulate BM25 contributions only for documents present in query postings.
+fn SearchIndex::rank_postings(
+  self : SearchIndex,
+  terms : Array[String],
+  top_k : Int,
+) -> Array[SearchResult] {
+  if top_k <= 0 || terms.is_empty() || self.total_docs == 0 {
+    return []
+  }
+  let scores : Map[Int, Double] = Map([])
+  let avg = if self.avg_dl > 0.0 { self.avg_dl } else { 1.0 }
+  for term in terms {
+    match self.postings.get(term) {
+      None => continue
+      Some(postings) => {
+        let df = postings.length()
+        let idf = @math.ln(
+          1.0 +
+          (self.total_docs.to_double() - df.to_double() + 0.5) /
+          (df.to_double() + 0.5),
+        )
+        for posting in postings {
+          let doc = posting.doc_id
+          let tf = posting.tf.to_double()
+          let denom = tf +
+            self.k1 * (1.0 - self.b + self.b * self.lens[doc].to_double() / avg)
+          let contribution = idf * (tf * (self.k1 + 1.0)) / denom
+          scores[doc] = scores.get_or_default(doc, 0.0) + contribution
+        }
+      }
+    }
+  }
   let scored : Array[(Int, Double)] = []
-  for i = 0; i < self.total_docs; i = i + 1 {
-    let score = self.score_doc(terms, i)
+  for entry in scores.iter() {
+    let (doc, score) = entry
     if score > 0.0 {
-      scored.push((i, score))
+      scored.push((doc, score))
     }
   }
   scored.sort_by(fn(a, b) {

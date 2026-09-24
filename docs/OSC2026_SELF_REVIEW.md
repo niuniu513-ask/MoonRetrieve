@@ -4,12 +4,11 @@
 
 `MoonRetrieve` 是一个有效的 MoonBit 项目，定位为纯 MoonBit 零 FFI 的本地全文检索与 RAG 检索库。项目具备分词、分块、BM25、短语/布尔/前缀检索、向量索引、RRF 融合、上下文组装、CLI、可在 wasm-gc 运行的最小示例、差异化文档、CI、测试和 Apache-2.0 许可证，适合作为 MoonBit 应用生态/基础组件方向提交。
 
-项目有效 MoonBit 源码与测试已超过 4,000 行，新增检索评估、查询纠错、结构化查询、结果融合去重、摘要与相关性解释，达到章程项目规模参考下限。GitHub、CI、许可证、README、示例、测试和 mooncakes 发布均已具备终审所需证据。
+项目有效 MoonBit 源码与测试已超过 4,000 行，新增检索评估、查询纠错、结构化查询、结果融合去重、摘要与相关性解释，并补充倒排驱动 BM25 计分及 2,000 文档性能基准，达到章程项目规模参考下限。GitHub、CI、许可证、README、示例、测试和 mooncakes 发布均已具备终审所需证据。
 
 ## 提交前需要处理的问题
 
 - Gitlink 仓库未在本地 remote 中体现。提交申报前需要导入并同步 Gitlink，确认默认分支能看到主要代码、README、LICENSE、CI、docs 和 examples。
-- 项目目录名是 `MoonSearch`，但 `moon.mod` 包名和 README 项目名是 `MoonRetrieve`。这不一定是错误，但提交材料中应统一说明，避免评审误以为仓库/包名不一致。
 
 ## 需要进一步确认的问题
 
@@ -27,16 +26,16 @@
 
 - `moon.mod`：包名为 `niuniu513-ask/MoonRetrieve`，许可证为 `Apache-2.0`，仓库为 `https://github.com/niuniu513-ask/MoonRetrieve`。
 - `moon check`：通过。
-- `moon test`：100 个测试全部通过。
+- `moon test`：109 个测试全部通过。
 - `moon check --deny-warn`：通过。
-- `moon test --deny-warn`：100 个测试全部通过。
+- `moon test --deny-warn`：109 个测试全部通过。
 - `moon fmt --check .`：通过。
 - `moon info`：通过。
 - `moon run examples/quickstart --target wasm-gc`：通过，可直接验证建索引、检索和上下文组装。
 - GitHub Actions：最新 CI 已通过 native CLI smoke、三目标测试和 benchmark。
 - `moon publish`：`niuniu513-ask/MoonRetrieve@0.5.0` 已发布成功。
 - `git remote show origin`：远程默认分支为 `main`，本地 `main` 已跟踪 `origin/main`。
-- `git rev-list --count HEAD`：当前历史为 22 个提交，超过申报阶段建议的 10–20 个有效提交；这些提交均为真实开发历史，不做破坏性改写。该区间不是终审硬标准。
+- `git rev-list --count HEAD`：本次更新前已有 27 个提交，超过申报阶段建议的 10–20 个有效提交；这些提交均为真实开发历史，不做破坏性改写。该区间不是终审硬标准。
 
 ## 可选环境建议
 
