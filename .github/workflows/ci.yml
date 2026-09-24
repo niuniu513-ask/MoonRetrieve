@@ -46,3 +46,26 @@ jobs:
       - name: Build library (wasm-gc)
         if: matrix.target == 'wasm-gc'
         run: moon build --target wasm-gc .
+
+  scifact:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install MoonBit
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+      - name: Update registry
+        run: moon update
+      - name: Prepare human-labeled SciFact test split
+        run: python3 scripts/prepare_scifact.py
+      - name: Index corpus
+        run: moon run cmd/main --target native -- index-jsonl _build/scifact/prepared/corpus.jsonl _build/scifact/index.json
+      - name: Evaluate full test split
+        run: |
+          moon run cmd/main --target native -- evaluate _build/scifact/index.json _build/scifact/prepared/cases.json -k 10 --json > _build/scifact/report.json
+          python3 scripts/check_scifact.py _build/scifact/report.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: scifact-test-report
+          path: _build/scifact/report.json

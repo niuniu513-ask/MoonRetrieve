@@ -59,6 +59,8 @@ pub fn normalize_result_scores(Array[SearchResult]) -> Array[SearchResult]
 
 pub fn paginate_results(Array[SearchResult], offset? : Int, limit? : Int) -> Array[SearchResult]
 
+pub fn parse_document_jsonl(String) -> Result[Array[(String, String)], String]
+
 pub fn parse_evaluation_cases(String) -> Result[Array[EvaluationCase], String]
 
 pub fn parse_query(String) -> Result[QueryPlan, String]

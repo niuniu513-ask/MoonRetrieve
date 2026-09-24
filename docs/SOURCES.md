@@ -10,3 +10,9 @@ The project uses public information-retrieval concepts as implementation referen
 - The differentiation from existing MoonBit search/RAG projects is documented in `docs/differentiation.md`.
 
 No private corpus, commercial dataset, copied fixture, or closed model output is included in the repository.
+
+## SciFact evaluation data
+
+The reproducible evaluation uses the public [SciFact dataset](https://github.com/allenai/scifact) through the [BEIR SciFact archive](https://github.com/beir-cellar/beir). Its corpus consists of S2ORC paper abstracts (ODC-By 1.0); SciFact claims and evidence annotations are CC BY 4.0 according to the upstream `LICENSE.md`. The upstream code is Apache-2.0. The 300 test queries and 339 positive query-document labels were created upstream by human annotators, not by MoonRetrieve's author. They are relevance labels, not proof that every retrieved passage supports a generated answer.
+
+The archive URL and SHA-256 are pinned in `scripts/prepare_scifact.py`. The script downloads the dataset to ignored `_build/`, verifies the archive, and produces local input files. No SciFact corpus text, queries, or labels are committed or republished in this repository. See [the reproduction guide](scifact.md) for evaluation commands and scope.

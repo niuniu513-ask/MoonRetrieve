@@ -1,6 +1,10 @@
 # Changelog
 
-## Unreleased（2026-09-24）
+## 0.6.0（2026-09-24）
+
+- 增加 `parse_document_jsonl` 与 CLI `index-jsonl`，校验稳定文档 ID 后批量索引外部 JSONL 语料。
+- 增加 SciFact/BEIR 公开人工标注测试集的固定下载、校验、转换和全量 CI 评测流程；数据不随包发布。
+- 补充科研摘要本地检索、引用核对和错误分析的端到端复现说明。
 
 - 新增 `Engine::trace` 与 CLI `trace --json`，为检索结果输出可复核的词项匹配证据；CI 增加诊断命令冒烟测试。
 - 增加文档级检索评测：标注查询集、`Engine::search_sources` / `evaluate_queries`、CLI `evaluate --json` 与 CI 冒烟；修正结果不足 K 时的 Precision@K 分母和含 `#` 的文档来源解析。

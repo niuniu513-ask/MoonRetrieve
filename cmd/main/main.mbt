@@ -3,6 +3,7 @@
 ///
 /// 用法：
 ///   moon run cmd/main -- index <文件或目录> [输出.json]
+///   moon run cmd/main -- index-jsonl <文档.jsonl> [输出.json]
 ///   moon run cmd/main -- query <索引.json> "<查询>" [-k N]
 ///   moon run cmd/main -- context <索引.json> "<查询>" [-k N] [--tokens N] [--diverse] [--json]
 ///   moon run cmd/main -- evaluate <索引.json> <标注.json> [-k N] [--json]
@@ -23,6 +24,10 @@ async fn main {
   match cmd {
     "index" =>
       run_index(args) catch {
+        err => println("Error: \{err.to_string()}")
+      }
+    "index-jsonl" =>
+      run_index_jsonl(args) catch {
         err => println("Error: \{err.to_string()}")
       }
     "query" =>
@@ -75,6 +80,7 @@ fn usage() -> Unit {
   println(
     "  index <path> [output.json]        建索引（支持 .md/.txt 文件或目录）",
   )
+  println("  index-jsonl <path> [output.json]  导入 id/title/text JSONL")
   println("  query <index.json> \"<query>\" [-k N] [--highlight]   检索")
   println(
     "  context <index.json> \"<query>\" [-k N] [--tokens N] [--diverse] [--json] 生成上下文",
@@ -122,6 +128,26 @@ async fn run_index(args : Array[String]) -> Unit {
   let json = engine.save()
   @fs.write_file(output, json, create_mode=@fs.CreateOrTruncate)
   println("Done: \{count} files, \{engine.count()} chunks -> \{output}")
+}
+
+///|
+async fn run_index_jsonl(args : Array[String]) -> Unit {
+  if args.length() < 3 {
+    usage()
+    return
+  }
+  let input = @fs.read_file(args[2]).text()
+  let documents = match @lib.parse_document_jsonl(input) {
+    Ok(documents) => documents
+    Err(message) => abort("invalid document JSONL: \{message}")
+  }
+  let output = if args.length() >= 4 { args[3] } else { "index.json" }
+  let engine = @lib.Engine::new()
+  engine.add_documents(documents)
+  @fs.write_file(output, engine.save(), create_mode=@fs.CreateOrTruncate)
+  println(
+    "Done: \{documents.length()} documents, \{engine.count()} chunks -> \{output}",
+  )
 }
 
 ///|
