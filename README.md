@@ -1,6 +1,6 @@
 # MoonRetrieve
 
-[![mooncakes.io](https://img.shields.io/badge/mooncakes.io-niuniu513--ask%2FMoonRetrieve-blue)](https://mooncakes.io/packages/niuniu513-ask/MoonRetrieve)
+[![mooncakes.io](https://img.shields.io/badge/mooncakes.io-niuniu513--ask%2FMoonRetrieve-blue)](https://mooncakes.io/docs/niuniu513-ask/MoonRetrieve)
 [![CI](https://github.com/niuniu513-ask/MoonRetrieve/actions/workflows/ci.yml/badge.svg)](https://github.com/niuniu513-ask/MoonRetrieve/actions/workflows/ci.yml)
 
 纯 MoonBit 零 FFI 的本地全文检索与 RAG（检索增强生成）检索库。文档在本地完成分词、分块、索引、检索和 LLM 上下文组装，数据不出本地；核心库可编译到 wasm / wasm-gc / js / native 多后端，适合浏览器、边缘设备与隐私敏感场景。
@@ -145,6 +145,6 @@ OSC 2026 申请人、仓库账号及历史 Git 作者身份说明见 [docs/PARTI
 
 本期新增的检索评估、查询解析、相关性解释、纠错和结果处理代码分别位于 `evaluation.mbt`、`query.mbt`、`explain.mbt`、`suggest.mbt`、`result_ops.mbt`。文档更新时可直接替换旧分块；RAG 上下文可按原始文档去重，并返回实际使用的引用清单和预算用量，应用无需再从提示词中解析来源。
 
-普通检索与前缀检索现按倒排表计分。在同一 wasm-gc 环境的 2,000 文档基准中，稀有词查询由约 62.8 µs 降至 0.45 µs，常见词由约 1.15 ms 降至 99 µs；负载和复现命令见 [性能记录](docs/performance.md)。本期再增加 SciFact 测试集的完整文档级评测，原来的三题样例仅保留作冒烟测试。JSONL 导入保留外部语料 ID，检索诊断和引用报告可以回溯到原文。CI 在 native、wasm-gc 和 js 上运行检查与测试，另设 SciFact 全量评测任务。mooncakes 的发布状态以包页面为准。
+普通检索与前缀检索现按倒排表计分。在同一 wasm-gc 环境的 2,000 文档基准中，稀有词查询由约 62.8 µs 降至 0.45 µs，常见词由约 1.15 ms 降至 99 µs；负载和复现命令见 [性能记录](docs/performance.md)。本期再增加 SciFact 测试集的完整文档级评测，原来的三题样例仅保留作冒烟测试。JSONL 导入保留外部语料 ID，检索诊断和引用报告可以回溯到原文。CI 在 native、wasm-gc 和 js 上运行检查与测试，另设 SciFact 全量评测任务。[0.6.0 已发布到 mooncakes](https://mooncakes.io/docs/niuniu513-ask/MoonRetrieve@0.6.0)。
 
 九月黑客松的规则、上一期晋级项目的可借鉴做法及尚未完成的工作见 [九月赛对照记录](docs/SEPTEMBER2026.md)。
