@@ -64,7 +64,7 @@ moon run cmd/main --target native -- query demo-index.json "MoonBit 黑客松" -
 moon run cmd/main --target native -- context demo-index.json "黑客松奖励" -k 3
 
 # 输出可供应用读取的提示词、引用清单与预算信息
-moon run cmd/main --target native -- context demo-index.json "MoonBit" -k 3 --tokens 200 --diverse --json
+moon run cmd/main --target native -- context demo-index.json "MoonBit" -k 3 --tokens 2000 --diverse --json
 
 # 索引统计
 moon run cmd/main --target native -- stats demo-index.json

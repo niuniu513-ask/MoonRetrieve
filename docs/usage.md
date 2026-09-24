@@ -153,7 +153,7 @@ moon run cmd/main --target native -- query index.json "MoonBit" -k 3
 moon run cmd/main --target native -- context index.json "黑客松" -k 3
 
 # JSON 结果含 prompt、citations 和预算统计
-moon run cmd/main --target native -- context index.json "MoonBit" -k 3 --tokens 200 --diverse --json
+moon run cmd/main --target native -- context index.json "MoonBit" -k 3 --tokens 2000 --diverse --json
 
 # 索引统计
 moon run cmd/main --target native -- stats index.json
