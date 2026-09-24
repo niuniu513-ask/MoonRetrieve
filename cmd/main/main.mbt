@@ -6,6 +6,7 @@
 ///   moon run cmd/main -- query <索引.json> "<查询>" [-k N]
 ///   moon run cmd/main -- context <索引.json> "<查询>" [-k N] [--tokens N] [--diverse] [--json]
 ///   moon run cmd/main -- evaluate <索引.json> <标注.json> [-k N] [--json]
+///   moon run cmd/main -- trace <索引.json> "<查询>" [-k N] [--json]
 ///   moon run cmd/main -- stats <索引.json>
 ///   moon run cmd/main -- phrase <索引.json> "<短语>" [-k N]
 ///   moon run cmd/main -- boolean <索引.json> "<表达式>" [-k N]
@@ -34,6 +35,10 @@ async fn main {
       }
     "evaluate" =>
       run_evaluate(args) catch {
+        err => println("Error: \{err.to_string()}")
+      }
+    "trace" =>
+      run_trace(args) catch {
         err => println("Error: \{err.to_string()}")
       }
     "stats" =>
@@ -76,6 +81,9 @@ fn usage() -> Unit {
   )
   println(
     "  evaluate <index.json> <cases.json> [-k N] [--json] 评测文档级检索",
+  )
+  println(
+    "  trace <index.json> \"<query>\" [-k N] [--json] 输出检索诊断轨迹",
   )
   println("  stats <index.json>                      索引统计")
   println("  phrase <index.json> \"<phrase>\" [-k N]  短语检索")
@@ -286,6 +294,30 @@ async fn run_evaluate(args : Array[String]) -> Unit {
     println("MRR@\{report.cutoff}: \{report.summary.mean_reciprocal_rank}")
     println("MAP@\{report.cutoff}: \{report.summary.mean_average_precision}")
     println("Hit rate@\{report.cutoff}: \{report.summary.hit_rate}")
+  }
+}
+
+///|
+async fn run_trace(args : Array[String]) -> Unit {
+  if args.length() < 4 {
+    usage()
+    return
+  }
+  let trace = load_engine(args[2]).trace(args[3], top_k=parse_top_k(args, 10))
+  if args.contains("--json") {
+    println(@json.to_json(trace).stringify())
+    return
+  }
+  println("Query: \{trace.query}")
+  println("Terms: \{@json.to_json(trace.query_terms).stringify()}")
+  println("Sources: \{trace.source_count}")
+  for hit in trace.hits {
+    println(
+      "\{hit.rank}. \{hit.doc_id} score=\{hit.score} overlap=\{hit.token_overlap}",
+    )
+    println(
+      "   matched=\{@json.to_json(hit.matched_terms).stringify()} missing=\{@json.to_json(hit.missing_terms).stringify()}",
+    )
   }
 }
 

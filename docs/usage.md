@@ -158,6 +158,8 @@ moon run cmd/main --target native -- evaluate index.json examples/evaluation-cas
 
 JSON 结果中的 `queries` 给出每题的文档排名和指标，`summary` 给出平均 Precision、Recall、F1、MRR、MAP 及命中率。
 
+需要检查单次查询时，可用 `engine.trace("RAG", top_k=3)` 或 CLI `trace`。报告包含分词后的查询、分块排名、原始文档 ID、BM25 排序分数、命中与缺失词、原文及词项重叠度。`token_overlap` 是 Jaccard 重叠度，仅辅助诊断，不能当成 BM25 分数的逐词归因。
+
 ## 8. CLI
 
 ```bash
@@ -175,6 +177,9 @@ moon run cmd/main --target native -- context index.json "MoonBit" -k 3 --tokens 
 
 # 文档级标注评测
 moon run cmd/main --target native -- evaluate index.json examples/evaluation-cases.json -k 3 --json
+
+# 查询诊断轨迹
+moon run cmd/main --target native -- trace index.json "MoonBit RAG" -k 3 --json
 
 # 索引统计
 moon run cmd/main --target native -- stats index.json

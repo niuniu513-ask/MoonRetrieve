@@ -25,10 +25,11 @@
 - 混合融合 `rrf_fuse`：Reciprocal Rank Fusion
 - 上下文组装 `ContextBuilder`：来源去重、分块预算与带引用清单的 `ContextReport`
 - 文档级检索评测：标注查询集、逐题排名与 Precision/Recall/MRR/MAP 汇总
+- 检索诊断轨迹 `Engine::trace`：输出排名、来源、分数、命中/缺失词和原始证据文本
 - 结果高亮 `highlight`：查询词自动标记 `**term**`
 - 文档删除与统计：`SearchIndex::remove` / `stats`、`Engine::remove_document` / `stats`
 - 一站式引擎 `Engine`：文档 → 分块 → 索引 → 检索，支持文档替换和 RAG 上下文构建
-- CLI：`index` / `query` / `context` / `evaluate` / `stats` / `phrase` / `boolean` / `prefix`
+- CLI：`index` / `query` / `context` / `evaluate` / `trace` / `stats` / `phrase` / `boolean` / `prefix`
 - 结果诊断 CLI：`snippet` 输出限定长度命中片段，`explain` 输出匹配词和覆盖情况
 
 ## 快速开始
@@ -70,6 +71,9 @@ moon run cmd/main --target native -- context demo-index.json "MoonBit" -k 3 --to
 # 用标注查询集评测文档级检索，JSON 含每题排名与汇总指标
 moon run cmd/main --target native -- evaluate demo-index.json examples/evaluation-cases.json -k 3 --json
 
+# 检查一次查询的排名和词项匹配证据
+moon run cmd/main --target native -- trace demo-index.json "MoonBit RAG" -k 3 --json
+
 # 索引统计
 moon run cmd/main --target native -- stats demo-index.json
 
@@ -92,6 +96,7 @@ vector.mbt           向量索引与 RRF 融合
 context.mbt          LLM 上下文组装
 engine.mbt           一站式引擎
 evaluation.mbt       Precision/Recall/MRR/MAP 等检索评估指标
+trace.mbt            可导出的检索诊断轨迹
 suggest.mbt          Unicode 查询纠错、推荐与前缀补全
 query.mbt            必选/排除/短语/前缀结构化查询
 result_ops.mbt       融合、去重、分组与多样化
@@ -105,7 +110,7 @@ docs/                使用教程、申报书、差异化说明与自查清单
 ## 测试与构建
 
 ```bash
-moon test        # 115 个测试（native / wasm-gc / js 由 CI 覆盖）
+moon test        # 118 个测试（native / wasm-gc / js 由 CI 覆盖）
 moon check
 moon build --target wasm-gc
 moon bench       # 5 项基准（分词 / 建索引 / 小集合与 2,000 文档检索）
@@ -133,4 +138,6 @@ OSC 2026 申请人、仓库账号及历史 Git 作者身份说明见 [docs/PARTI
 
 本期新增的检索评估、查询解析、相关性解释、纠错和结果处理代码分别位于 `evaluation.mbt`、`query.mbt`、`explain.mbt`、`suggest.mbt`、`result_ops.mbt`。文档更新时可直接替换旧分块；RAG 上下文可按原始文档去重，并返回实际使用的引用清单和预算用量，应用无需再从提示词中解析来源。
 
-普通检索与前缀检索现按倒排表计分。在同一 wasm-gc 环境的 2,000 文档基准中，稀有词查询由约 62.8 µs 降至 0.45 µs，常见词由约 1.15 ms 降至 99 µs；负载和复现命令见 [性能记录](docs/performance.md)。新增文档级标注评测入口，可在后续版本使用同一查询集观察质量变化；仓库内的三题样例只用于检验流程。目前有 115 项回归测试，CI 在 native、wasm-gc 和 js 上运行检查、测试与示例。mooncakes 上的 0.5.0 是先前版本，本期新增 API 以仓库 `main` 分支为准。
+普通检索与前缀检索现按倒排表计分。在同一 wasm-gc 环境的 2,000 文档基准中，稀有词查询由约 62.8 µs 降至 0.45 µs，常见词由约 1.15 ms 降至 99 µs；负载和复现命令见 [性能记录](docs/performance.md)。新增文档级标注评测入口，可在后续版本使用同一查询集观察质量变化；仓库内的三题样例只用于检验流程。目前有 118 项回归测试，CI 在 native、wasm-gc 和 js 上运行检查、测试与示例。mooncakes 上的 0.5.0 是先前版本，本期新增 API 以仓库 `main` 分支为准。
+
+九月黑客松的规则、上一期晋级项目的可借鉴做法及尚未完成的工作见 [九月赛对照记录](docs/SEPTEMBER2026.md)。

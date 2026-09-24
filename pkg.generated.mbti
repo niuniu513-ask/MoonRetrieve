@@ -182,6 +182,7 @@ pub fn Engine::search_snippets(Self, String, top_k? : Int, max_chars? : Int) -> 
 pub fn Engine::search_sources(Self, String, top_k? : Int) -> Array[SearchResult]
 pub fn Engine::stats(Self) -> IndexStats
 pub fn Engine::to_json(Self) -> Json
+pub fn Engine::trace(Self, String, top_k? : Int) -> RetrievalTrace
 pub fn Engine::try_load(String) -> Result[Self, String]
 
 pub struct EvaluatedQuery {
@@ -319,6 +320,15 @@ pub struct RetrievalMetrics {
 pub fn RetrievalMetrics::to_json(Self) -> Json
 pub fn RetrievalMetrics::to_repr(Self) -> @debug.Repr
 
+pub struct RetrievalTrace {
+  query : String
+  query_terms : Array[String]
+  top_k : Int
+  hits : Array[TraceHit]
+  source_count : Int
+} derive(ToJson)
+pub fn RetrievalTrace::to_json(Self) -> Json
+
 pub struct ScoredDoc {
   id : String
   score : Double
@@ -390,6 +400,18 @@ pub fn Tokenizer::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecode
 pub fn Tokenizer::new(min_token_len? : Int, bigram_cjk? : Bool, stem_english? : Bool, stopwords? : Array[String]) -> Self
 pub fn Tokenizer::to_json(Self) -> Json
 pub fn Tokenizer::tokenize(Self, String) -> Array[String]
+
+pub struct TraceHit {
+  rank : Int
+  doc_id : String
+  source_doc_id : String
+  score : Double
+  matched_terms : Array[String]
+  missing_terms : Array[String]
+  token_overlap : Double
+  text : String
+} derive(ToJson)
+pub fn TraceHit::to_json(Self) -> Json
 
 pub struct VectorIndex {
   items : Array[ScoredDoc]

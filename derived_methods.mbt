@@ -51,6 +51,12 @@ pub extend EvaluationReport with ToJson::{to_json}
 pub extend ResultExplanation with @debug.Debug::{to_repr}
 
 ///|
+pub extend TraceHit with ToJson::{to_json}
+
+///|
+pub extend RetrievalTrace with ToJson::{to_json}
+
+///|
 pub extend Posting with ToJson::{to_json}
 
 ///|

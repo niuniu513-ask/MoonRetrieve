@@ -29,9 +29,9 @@
 
 - `moon.mod`：包名为 `niuniu513-ask/MoonRetrieve`，许可证为 `Apache-2.0`，仓库为 `https://github.com/niuniu513-ask/MoonRetrieve`。
 - `moon check`：通过。
-- `moon test`：115 个测试全部通过。
+- `moon test`：118 个测试全部通过。
 - `moon check --deny-warn`：通过。
-- `moon test --deny-warn`：115 个测试全部通过。
+- `moon test --deny-warn`：118 个测试全部通过。
 - `moon fmt --check .`：通过。
 - `moon info`：通过。
 - `moon run examples/quickstart --target wasm-gc`：通过，可直接验证建索引、检索和上下文组装。

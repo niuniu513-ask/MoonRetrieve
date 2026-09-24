@@ -2,6 +2,7 @@
 
 ## Unreleased（2026-09-24）
 
+- 新增 `Engine::trace` 与 CLI `trace --json`，为检索结果输出可复核的词项匹配证据；CI 增加诊断命令冒烟测试。
 - 增加文档级检索评测：标注查询集、`Engine::search_sources` / `evaluate_queries`、CLI `evaluate --json` 与 CI 冒烟；修正结果不足 K 时的 Precision@K 分母和含 `#` 的文档来源解析。
 - 新增 `ContextReport` 与引用清单；超预算片段会跳过，CLI `context` 支持 `--tokens`、`--diverse`、`--json`，并由 CI 校验 JSON 输出。
 - 更新可运行示例，增加上下文引用展示；测试总数达到 113 项。
