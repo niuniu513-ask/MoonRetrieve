@@ -12,7 +12,7 @@ pub struct RetrievalMetrics {
   reciprocal_rank : Double
   average_precision : Double
   r_precision : Double
-} derive(Debug)
+} derive(Debug, ToJson)
 
 ///|
 /// Aggregate metrics over multiple queries.
@@ -24,7 +24,61 @@ pub struct EvaluationSummary {
   mean_reciprocal_rank : Double
   mean_average_precision : Double
   hit_rate : Double
-} derive(Debug)
+} derive(Debug, ToJson)
+
+///|
+/// One query with relevant original document IDs, not chunk IDs.
+pub struct EvaluationCase {
+  query : String
+  relevant_doc_ids : Array[String]
+} derive(ToJson, FromJson)
+
+///|
+pub fn EvaluationCase::new(
+  query : String,
+  relevant_doc_ids : Array[String],
+) -> EvaluationCase {
+  { query, relevant_doc_ids, }
+}
+
+///|
+pub struct EvaluatedQuery {
+  query : String
+  ranked_doc_ids : Array[String]
+  metrics : RetrievalMetrics
+} derive(ToJson)
+
+///|
+pub struct EvaluationReport {
+  cutoff : Int
+  queries : Array[EvaluatedQuery]
+  summary : EvaluationSummary
+} derive(ToJson)
+
+///|
+pub fn parse_evaluation_cases(
+  text : String,
+) -> Result[Array[EvaluationCase], String] {
+  try {
+    let json = @json.parse(text)
+    let cases : Array[EvaluationCase] = @json.from_json(json)
+    if cases.is_empty() {
+      Err("evaluation set must contain at least one query")
+    } else {
+      for i = 0; i < cases.length(); i = i + 1 {
+        if cases[i].query == "" {
+          return Err("query \{i + 1} is empty")
+        }
+        if cases[i].relevant_doc_ids.is_empty() {
+          return Err("query \{i + 1} has no relevant document IDs")
+        }
+      }
+      Ok(cases)
+    }
+  } catch {
+    err => Err(err.to_string())
+  }
+}
 
 ///|
 pub fn result_ids(results : Array[SearchResult]) -> Array[String] {
@@ -84,11 +138,10 @@ pub fn precision_at(
   relevant : Array[String],
   cutoff : Int,
 ) -> Double {
-  let limit = effective_cutoff(ranked, cutoff)
-  if limit == 0 {
+  if cutoff <= 0 {
     return 0.0
   }
-  count_relevant_at(ranked, relevant, cutoff).to_double() / limit.to_double()
+  count_relevant_at(ranked, relevant, cutoff).to_double() / cutoff.to_double()
 }
 
 ///|

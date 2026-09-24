@@ -62,6 +62,44 @@ pub fn Engine::search(
 }
 
 ///|
+/// Return the best matching chunk from each original document.
+pub fn Engine::search_sources(
+  self : Engine,
+  query : String,
+  top_k? : Int = 10,
+) -> Array[SearchResult] {
+  if top_k <= 0 {
+    return []
+  }
+  deduplicate_by_source(self.search(query, top_k=self.count()), limit=top_k)
+}
+
+///|
+/// Evaluate ranked original documents against a labeled query set.
+pub fn Engine::evaluate_queries(
+  self : Engine,
+  cases : Array[EvaluationCase],
+  cutoff? : Int = 10,
+) -> EvaluationReport {
+  let queries : Array[EvaluatedQuery] = []
+  let metrics : Array[RetrievalMetrics] = []
+  for case in cases {
+    let ranked_doc_ids : Array[String] = []
+    for result in self.search_sources(case.query, top_k=cutoff) {
+      ranked_doc_ids.push(source_doc_id(result.doc_id))
+    }
+    let measurement = evaluate_ranking(
+      ranked_doc_ids,
+      case.relevant_doc_ids,
+      cutoff~,
+    )
+    queries.push({ query: case.query, ranked_doc_ids, metrics: measurement, })
+    metrics.push(measurement)
+  }
+  { cutoff, queries, summary: summarize_evaluations(metrics), }
+}
+
+///|
 /// 短语检索 Top-K 分块。
 pub fn Engine::search_phrase(
   self : Engine,
@@ -162,8 +200,7 @@ pub fn Engine::build_diverse_context_report(
   top_k? : Int = 10,
   max_tokens? : Int = 800,
 ) -> ContextReport {
-  let candidate_k = if top_k > 0 { top_k * 3 } else { 0 }
-  let results = self.search(query, top_k=candidate_k)
+  let results = self.search_sources(query, top_k~)
   let builder = ContextBuilder::new(max_tokens~)
   builder.build_diverse_report(query, results, max_sources=top_k)
 }

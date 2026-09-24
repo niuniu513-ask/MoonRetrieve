@@ -5,6 +5,7 @@
 ///   moon run cmd/main -- index <文件或目录> [输出.json]
 ///   moon run cmd/main -- query <索引.json> "<查询>" [-k N]
 ///   moon run cmd/main -- context <索引.json> "<查询>" [-k N] [--tokens N] [--diverse] [--json]
+///   moon run cmd/main -- evaluate <索引.json> <标注.json> [-k N] [--json]
 ///   moon run cmd/main -- stats <索引.json>
 ///   moon run cmd/main -- phrase <索引.json> "<短语>" [-k N]
 ///   moon run cmd/main -- boolean <索引.json> "<表达式>" [-k N]
@@ -29,6 +30,10 @@ async fn main {
       }
     "context" =>
       run_context(args) catch {
+        err => println("Error: \{err.to_string()}")
+      }
+    "evaluate" =>
+      run_evaluate(args) catch {
         err => println("Error: \{err.to_string()}")
       }
     "stats" =>
@@ -68,6 +73,9 @@ fn usage() -> Unit {
   println("  query <index.json> \"<query>\" [-k N] [--highlight]   检索")
   println(
     "  context <index.json> \"<query>\" [-k N] [--tokens N] [--diverse] [--json] 生成上下文",
+  )
+  println(
+    "  evaluate <index.json> <cases.json> [-k N] [--json] 评测文档级检索",
   )
   println("  stats <index.json>                      索引统计")
   println("  phrase <index.json> \"<phrase>\" [-k N]  短语检索")
@@ -248,6 +256,36 @@ async fn run_context(args : Array[String]) -> Unit {
     println(@json.to_json(report).stringify())
   } else {
     println(report.prompt)
+  }
+}
+
+///|
+async fn run_evaluate(args : Array[String]) -> Unit {
+  if args.length() < 4 {
+    usage()
+    return
+  }
+  let engine = load_engine(args[2])
+  let text = @fs.read_file(args[3]).text()
+  let cases = match @lib.parse_evaluation_cases(text) {
+    Ok(cases) => cases
+    Err(msg) => abort("invalid evaluation set: \{msg}")
+  }
+  let report = engine.evaluate_queries(cases, cutoff=parse_top_k(args, 10))
+  if args.contains("--json") {
+    println(@json.to_json(report).stringify())
+  } else {
+    for query in report.queries {
+      println(
+        "\{query.query}: \{@json.to_json(query.ranked_doc_ids).stringify()}",
+      )
+    }
+    println("Queries: \{report.summary.query_count}")
+    println("Precision@\{report.cutoff}: \{report.summary.mean_precision}")
+    println("Recall@\{report.cutoff}: \{report.summary.mean_recall}")
+    println("MRR@\{report.cutoff}: \{report.summary.mean_reciprocal_rank}")
+    println("MAP@\{report.cutoff}: \{report.summary.mean_average_precision}")
+    println("Hit rate@\{report.cutoff}: \{report.summary.hit_rate}")
   }
 }
 

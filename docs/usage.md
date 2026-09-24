@@ -140,7 +140,25 @@ match @lib.Engine::try_load(json) {
 }
 ```
 
-## 7. CLI
+## 7. 标注评测
+
+评测按原始文档计数。同一文档命中的多个分块只保留最高分分块，标注 ID 要与 `add_document` 的 ID 一致，不带 `#0` 等分块后缀。
+
+```moonbit
+let cases = [@lib.EvaluationCase::new("RAG 是什么", ["faq.md"])]
+let report = engine.evaluate_queries(cases, cutoff=3)
+println(report.summary.mean_reciprocal_rank)
+```
+
+CLI 接收 JSON 数组，每项含 `query` 和 `relevant_doc_ids`。仓库的 `examples/evaluation-cases.json` 是三题冒烟样例，适合验证评测流程，不足以证明真实语料上的检索质量。长期对比应固定文档集、标注集、截断值和工具链版本。Precision@K 的分母固定为 K，结果不足 K 条时空缺位置计为未命中。
+
+```bash
+moon run cmd/main --target native -- evaluate index.json examples/evaluation-cases.json -k 3 --json
+```
+
+JSON 结果中的 `queries` 给出每题的文档排名和指标，`summary` 给出平均 Precision、Recall、F1、MRR、MAP 及命中率。
+
+## 8. CLI
 
 ```bash
 # 建索引（支持 .md / .txt 文件或目录）
@@ -154,6 +172,9 @@ moon run cmd/main --target native -- context index.json "黑客松" -k 3
 
 # JSON 结果含 prompt、citations 和预算统计
 moon run cmd/main --target native -- context index.json "MoonBit" -k 3 --tokens 2000 --diverse --json
+
+# 文档级标注评测
+moon run cmd/main --target native -- evaluate index.json examples/evaluation-cases.json -k 3 --json
 
 # 索引统计
 moon run cmd/main --target native -- stats index.json
@@ -170,7 +191,7 @@ moon run cmd/main --target native -- snippet index.json "MoonBit" -k 3 --chars 1
 moon run cmd/main --target native -- explain index.json "MoonBit" -k 3
 ```
 
-## 8. 多后端构建
+## 9. 多后端构建
 
 核心库零 FFI，同一套代码支持多目标：
 
@@ -182,7 +203,7 @@ moon test --target native
 
 CI 覆盖 native / wasm-gc / js 三个目标。
 
-## 9. 基准测试
+## 10. 基准测试
 
 ```bash
 moon bench --target native

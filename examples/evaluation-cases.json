@@ -1,0 +1,14 @@
+[
+  {
+    "query": "检索增强生成",
+    "relevant_doc_ids": ["examples/notes/rag-guide.md"]
+  },
+  {
+    "query": "wasm-gc 后端",
+    "relevant_doc_ids": ["examples/notes/moonbit-intro.md"]
+  },
+  {
+    "query": "黑客松 报名",
+    "relevant_doc_ids": ["examples/notes/hackathon.md"]
+  }
+]

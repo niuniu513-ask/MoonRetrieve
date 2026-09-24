@@ -10,8 +10,20 @@ pub struct ResultGroup {
 
 ///|
 pub fn source_doc_id(chunk_id : String) -> String {
-  match chunk_id.find("#") {
-    Some(index) => chunk_id.exact_view(start=0, end=index).to_owned()
+  match chunk_id.rev_find("#") {
+    Some(index) => {
+      let suffix = chunk_id.exact_view(start=index + 1).to_owned()
+      try {
+        let chunk_number = @string.parse_int(suffix)
+        if chunk_number >= 0 {
+          chunk_id.exact_view(start=0, end=index).to_owned()
+        } else {
+          chunk_id
+        }
+      } catch {
+        _ => chunk_id
+      }
+    }
     None => chunk_id
   }
 }

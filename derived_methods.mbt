@@ -27,7 +27,25 @@ pub extend Engine with @json.FromJson::{from_json}
 pub extend RetrievalMetrics with @debug.Debug::{to_repr}
 
 ///|
+pub extend RetrievalMetrics with ToJson::{to_json}
+
+///|
 pub extend EvaluationSummary with @debug.Debug::{to_repr}
+
+///|
+pub extend EvaluationSummary with ToJson::{to_json}
+
+///|
+pub extend EvaluationCase with ToJson::{to_json}
+
+///|
+pub extend EvaluationCase with @json.FromJson::{from_json}
+
+///|
+pub extend EvaluatedQuery with ToJson::{to_json}
+
+///|
+pub extend EvaluationReport with ToJson::{to_json}
 
 ///|
 pub extend ResultExplanation with @debug.Debug::{to_repr}

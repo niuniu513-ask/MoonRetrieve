@@ -2,6 +2,7 @@
 
 ## Unreleased（2026-09-24）
 
+- 增加文档级检索评测：标注查询集、`Engine::search_sources` / `evaluate_queries`、CLI `evaluate --json` 与 CI 冒烟；修正结果不足 K 时的 Precision@K 分母和含 `#` 的文档来源解析。
 - 新增 `ContextReport` 与引用清单；超预算片段会跳过，CLI `context` 支持 `--tokens`、`--diverse`、`--json`，并由 CI 校验 JSON 输出。
 - 更新可运行示例，增加上下文引用展示；测试总数达到 113 项。
 - 适配 MoonBit 0.1.20260920：显式声明派生类型方法，迁移旧字符串 API，恢复三目标的严格检查与格式检查。

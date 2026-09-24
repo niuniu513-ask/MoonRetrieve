@@ -13,6 +13,8 @@ test "source document ID strips chunk suffix" {
   assert_eq(@MoonRetrieve.source_doc_id("guide#12"), "guide")
   assert_eq(@MoonRetrieve.source_doc_id("plain"), "plain")
   assert_eq(@MoonRetrieve.source_doc_id("#0"), "")
+  assert_eq(@MoonRetrieve.source_doc_id("part#draft#2"), "part#draft")
+  assert_eq(@MoonRetrieve.source_doc_id("part#draft"), "part#draft")
 }
 
 ///|

@@ -59,6 +59,8 @@ pub fn normalize_result_scores(Array[SearchResult]) -> Array[SearchResult]
 
 pub fn paginate_results(Array[SearchResult], offset? : Int, limit? : Int) -> Array[SearchResult]
 
+pub fn parse_evaluation_cases(String) -> Result[Array[EvaluationCase], String]
+
 pub fn parse_query(String) -> Result[QueryPlan, String]
 
 pub fn precision_at(Array[String], Array[String], Int) -> Double
@@ -164,6 +166,7 @@ pub fn Engine::build_context_report(Self, String, top_k? : Int, max_tokens? : In
 pub fn Engine::build_diverse_context(Self, String, top_k? : Int, max_tokens? : Int) -> String
 pub fn Engine::build_diverse_context_report(Self, String, top_k? : Int, max_tokens? : Int) -> ContextReport
 pub fn Engine::count(Self) -> Int
+pub fn Engine::evaluate_queries(Self, Array[EvaluationCase], cutoff? : Int) -> EvaluationReport
 pub fn Engine::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
 pub fn Engine::highlight(Self, String, String) -> String
 pub fn Engine::new(chunker? : Chunker, index? : SearchIndex) -> Self
@@ -176,9 +179,32 @@ pub fn Engine::search_explained(Self, String, top_k? : Int) -> Array[ResultExpla
 pub fn Engine::search_phrase(Self, String, top_k? : Int) -> Array[SearchResult]
 pub fn Engine::search_prefix(Self, String, top_k? : Int) -> Array[SearchResult]
 pub fn Engine::search_snippets(Self, String, top_k? : Int, max_chars? : Int) -> Array[SearchResult]
+pub fn Engine::search_sources(Self, String, top_k? : Int) -> Array[SearchResult]
 pub fn Engine::stats(Self) -> IndexStats
 pub fn Engine::to_json(Self) -> Json
 pub fn Engine::try_load(String) -> Result[Self, String]
+
+pub struct EvaluatedQuery {
+  query : String
+  ranked_doc_ids : Array[String]
+  metrics : RetrievalMetrics
+} derive(ToJson)
+pub fn EvaluatedQuery::to_json(Self) -> Json
+
+pub struct EvaluationCase {
+  query : String
+  relevant_doc_ids : Array[String]
+} derive(ToJson, @json.FromJson)
+pub fn EvaluationCase::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
+pub fn EvaluationCase::new(String, Array[String]) -> Self
+pub fn EvaluationCase::to_json(Self) -> Json
+
+pub struct EvaluationReport {
+  cutoff : Int
+  queries : Array[EvaluatedQuery]
+  summary : EvaluationSummary
+} derive(ToJson)
+pub fn EvaluationReport::to_json(Self) -> Json
 
 pub struct EvaluationSummary {
   query_count : Int
@@ -188,7 +214,8 @@ pub struct EvaluationSummary {
   mean_reciprocal_rank : Double
   mean_average_precision : Double
   hit_rate : Double
-} derive(@debug.Debug)
+} derive(ToJson, @debug.Debug)
+pub fn EvaluationSummary::to_json(Self) -> Json
 pub fn EvaluationSummary::to_repr(Self) -> @debug.Repr
 
 pub struct IndexStats {
@@ -288,7 +315,8 @@ pub struct RetrievalMetrics {
   reciprocal_rank : Double
   average_precision : Double
   r_precision : Double
-} derive(@debug.Debug)
+} derive(ToJson, @debug.Debug)
+pub fn RetrievalMetrics::to_json(Self) -> Json
 pub fn RetrievalMetrics::to_repr(Self) -> @debug.Repr
 
 pub struct ScoredDoc {

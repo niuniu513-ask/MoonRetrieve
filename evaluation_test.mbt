@@ -20,6 +20,7 @@ test "metrics handle empty inputs and cutoffs" {
   assert_eq(@MoonRetrieve.precision_at(["a"], ["a"], 0), 0.0)
   assert_eq(@MoonRetrieve.reciprocal_rank_at(["a"], ["a"], -1), 0.0)
   assert_eq(@MoonRetrieve.f1_score(0.0, 1.0), 0.0)
+  assert_eq(@MoonRetrieve.precision_at(["a"], ["a"], 10), 0.1)
 }
 
 ///|
@@ -137,4 +138,62 @@ test "corpus coverage counts unique retrieved documents" {
     0.75,
   )
   assert_eq(@MoonRetrieve.corpus_coverage(rankings, [], cutoff=2), 0.0)
+}
+
+///|
+test "evaluation uses source documents and searches past duplicate chunks" {
+  let index = @MoonRetrieve.SearchIndex::new()
+  index.add("alpha#0", "moonbit moonbit retrieval")
+  index.add("alpha#1", "moonbit moonbit retrieval")
+  index.add("alpha#2", "moonbit moonbit retrieval")
+  index.add("beta#0", "moonbit language tools for local retrieval projects")
+  let engine = @MoonRetrieve.Engine::new(index~)
+  assert_eq(engine.search("moonbit", top_k=2).length(), 2)
+  let sources = engine.search_sources("moonbit", top_k=2)
+  assert_eq(sources.length(), 2)
+  assert_eq(@MoonRetrieve.source_doc_id(sources[0].doc_id), "alpha")
+  assert_eq(@MoonRetrieve.source_doc_id(sources[1].doc_id), "beta")
+  let report = engine.evaluate_queries(
+    [@MoonRetrieve.EvaluationCase::new("moonbit", ["beta"])],
+    cutoff=2,
+  )
+  assert_eq(report.queries[0].ranked_doc_ids, ["alpha", "beta"])
+  assert_eq(report.summary.mean_reciprocal_rank, 0.5)
+  assert_eq(report.summary.mean_recall, 1.0)
+}
+
+///|
+test "evaluation set parses and rejects empty input" {
+  let cases = @MoonRetrieve.parse_evaluation_cases(
+    "[{\"query\":\"moonbit\",\"relevant_doc_ids\":[\"guide\"]}]",
+  )
+  match cases {
+    Ok(cases) => {
+      assert_eq(cases.length(), 1)
+      assert_eq(cases[0].relevant_doc_ids, ["guide"])
+    }
+    Err(_) => fail("valid evaluation set was rejected")
+  }
+  match @MoonRetrieve.parse_evaluation_cases("[]") {
+    Ok(_) => fail("empty evaluation set was accepted")
+    Err(_) => ()
+  }
+  match @MoonRetrieve.parse_evaluation_cases("not json") {
+    Ok(_) => fail("invalid JSON was accepted")
+    Err(_) => ()
+  }
+  match
+    @MoonRetrieve.parse_evaluation_cases(
+      "[{\"query\":\"\",\"relevant_doc_ids\":[\"guide\"]}]",
+    ) {
+    Ok(_) => fail("empty query was accepted")
+    Err(_) => ()
+  }
+  match
+    @MoonRetrieve.parse_evaluation_cases(
+      "[{\"query\":\"moonbit\",\"relevant_doc_ids\":[]}]",
+    ) {
+    Ok(_) => fail("empty relevance set was accepted")
+    Err(_) => ()
+  }
 }
