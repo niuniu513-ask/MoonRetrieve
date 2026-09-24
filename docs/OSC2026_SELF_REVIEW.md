@@ -4,7 +4,7 @@
 
 `MoonRetrieve` 是一个有效的 MoonBit 项目，定位为纯 MoonBit 零 FFI 的本地全文检索与 RAG 检索库。项目具备分词、分块、BM25、短语/布尔/前缀检索、向量索引、RRF 融合、上下文组装、CLI、可在 wasm-gc 运行的最小示例、差异化文档、CI、测试和 Apache-2.0 许可证，适合作为 MoonBit 应用生态/基础组件方向提交。
 
-项目有效 MoonBit 源码与测试已超过 4,000 行，新增检索评估、查询纠错、结构化查询、结果融合去重、摘要与相关性解释，并补充倒排驱动 BM25 计分及 2,000 文档性能基准，达到章程项目规模参考下限。GitHub、CI、许可证、README、示例、测试和 mooncakes 发布均已具备终审所需证据。
+项目有效 MoonBit 源码与测试已超过 4,000 行，新增检索评估、查询纠错、结构化查询、结果融合去重、摘要与相关性解释，并补充倒排驱动 BM25 计分、2,000 文档性能基准和带引用清单的 RAG 上下文。GitHub、CI、许可证、README、示例、测试和 mooncakes 发布均已具备终审所需证据；新 API 尚未发布到 mooncakes。
 
 ## 提交前需要处理的问题
 
@@ -26,9 +26,9 @@
 
 - `moon.mod`：包名为 `niuniu513-ask/MoonRetrieve`，许可证为 `Apache-2.0`，仓库为 `https://github.com/niuniu513-ask/MoonRetrieve`。
 - `moon check`：通过。
-- `moon test`：109 个测试全部通过。
+- `moon test`：113 个测试全部通过。
 - `moon check --deny-warn`：通过。
-- `moon test --deny-warn`：109 个测试全部通过。
+- `moon test --deny-warn`：113 个测试全部通过。
 - `moon fmt --check .`：通过。
 - `moon info`：通过。
 - `moon run examples/quickstart --target wasm-gc`：通过，可直接验证建索引、检索和上下文组装。

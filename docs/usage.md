@@ -72,6 +72,22 @@ let prompt = engine.build_diverse_context(
 )
 ```
 
+应用需要单独记录引用时，可以读取仓库 `main` 分支新增的结构化结果：
+
+```moonbit
+let report = engine.build_diverse_context_report(
+  "RAG 是什么", top_k=3, max_tokens=500,
+)
+println(report.prompt)
+for citation in report.citations {
+  println("[\{citation.number}] \{citation.doc_id}")
+}
+println("content tokens: \{report.used_content_tokens}")
+println("skipped: \{report.skipped_results}")
+```
+
+`max_tokens` 限制检索片段的估算 token 数，不含问题和提示词模板。`estimated_prompt_tokens` 则估算完整提示词；两者都基于内置分词器，并非某个大模型的精确 token 数。放不下的片段会跳过，后续较短的结果仍可进入上下文。
+
 ## 5. 删除文档与统计
 
 ```moonbit
@@ -135,6 +151,9 @@ moon run cmd/main --target native -- query index.json "MoonBit" -k 3
 
 # 生成 LLM 上下文
 moon run cmd/main --target native -- context index.json "黑客松" -k 3
+
+# JSON 结果含 prompt、citations 和预算统计
+moon run cmd/main --target native -- context index.json "MoonBit" -k 3 --tokens 200 --diverse --json
 
 # 索引统计
 moon run cmd/main --target native -- stats index.json

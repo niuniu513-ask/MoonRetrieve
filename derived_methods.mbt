@@ -12,6 +12,12 @@ pub extend ContextBuilder with ToJson::{to_json}
 pub extend ContextBuilder with @json.FromJson::{from_json}
 
 ///|
+pub extend ContextCitation with ToJson::{to_json}
+
+///|
+pub extend ContextReport with ToJson::{to_json}
+
+///|
 pub extend Engine with ToJson::{to_json}
 
 ///|

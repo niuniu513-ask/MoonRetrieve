@@ -23,7 +23,7 @@
 - 前缀检索 `search_prefix`：按词条前缀匹配
 - 向量索引 `VectorIndex`：余弦相似度检索
 - 混合融合 `rrf_fuse`：Reciprocal Rank Fusion
-- 上下文组装 `ContextBuilder`：token 预算控制、来源标注、按来源去重
+- 上下文组装 `ContextBuilder`：来源去重、分块预算与带引用清单的 `ContextReport`
 - 结果高亮 `highlight`：查询词自动标记 `**term**`
 - 文档删除与统计：`SearchIndex::remove` / `stats`、`Engine::remove_document` / `stats`
 - 一站式引擎 `Engine`：文档 → 分块 → 索引 → 检索，支持文档替换和 RAG 上下文构建
@@ -63,6 +63,9 @@ moon run cmd/main --target native -- query demo-index.json "MoonBit 黑客松" -
 # 生成 LLM 上下文
 moon run cmd/main --target native -- context demo-index.json "黑客松奖励" -k 3
 
+# 输出可供应用读取的提示词、引用清单与预算信息
+moon run cmd/main --target native -- context demo-index.json "MoonBit" -k 3 --tokens 200 --diverse --json
+
 # 索引统计
 moon run cmd/main --target native -- stats demo-index.json
 
@@ -97,7 +100,7 @@ docs/                使用教程、申报书、差异化说明与自查清单
 ## 测试与构建
 
 ```bash
-moon test        # 109 个测试（native / wasm-gc / js 由 CI 覆盖）
+moon test        # 113 个测试（native / wasm-gc / js 由 CI 覆盖）
 moon check
 moon build --target wasm-gc
 moon bench       # 5 项基准（分词 / 建索引 / 小集合与 2,000 文档检索）
@@ -123,4 +126,6 @@ OSC 2026 申请人、仓库账号及历史 Git 作者身份说明见 [docs/PARTI
 
 ### 本期实质新增工作
 
-本期赛事周期内，MoonRetrieve 已完成面向可评估检索的实质功能扩展：新增检索评估指标（Precision、Recall、F1、MRR、MAP、R-Precision、覆盖率）、结构化查询解析、相关性解释、摘要与命中片段生成、Unicode 查询纠错与前缀补全，以及结果过滤、分页、去重、融合、分组和多样化；进一步补充文档原子替换、引擎级 RAG 上下文构建和多来源去重上下文。本次将普通与前缀检索改为倒排驱动计分，并提供 2,000 文档基准，稀有词查询在同一 wasm-gc 环境下从约 62.8 µs 降至 0.45 µs，常见词从约 1.15 ms 降至 99 µs。项目现有 109 项回归测试、`examples/quickstart` 可运行示例、CLI 冒烟测试和五项基准测试，并由 CI 覆盖 native / wasm-gc / js。对应实现和测试见 `index.mbt`、`engine.mbt`、`context.mbt`、`evaluation.mbt`、`query.mbt`、`explain.mbt`、`summary.mbt`、`suggest.mbt`、`result_ops.mbt` 及其测试文件。
+本期新增的检索评估、查询解析、相关性解释、纠错和结果处理代码分别位于 `evaluation.mbt`、`query.mbt`、`explain.mbt`、`suggest.mbt`、`result_ops.mbt`。文档更新时可直接替换旧分块；RAG 上下文可按原始文档去重，并返回实际使用的引用清单和预算用量，应用无需再从提示词中解析来源。
+
+普通检索与前缀检索现按倒排表计分。在同一 wasm-gc 环境的 2,000 文档基准中，稀有词查询由约 62.8 µs 降至 0.45 µs，常见词由约 1.15 ms 降至 99 µs；负载和复现命令见 [性能记录](docs/performance.md)。目前有 113 项回归测试，CI 在 native、wasm-gc 和 js 上运行检查、测试与示例。mooncakes 上的 0.5.0 是先前版本，本期新增 API 以仓库 `main` 分支为准。

@@ -12,8 +12,16 @@ fn main {
     println("  [\{r.doc_id}] score=\{r.score}")
   }
 
-  let builder = @search.ContextBuilder::new(max_tokens=80)
+  let report = engine.build_diverse_context_report(
+    "RAG 是什么",
+    top_k=3,
+    max_tokens=80,
+  )
   println("")
   println("Context:")
-  println(builder.build("RAG 是什么", results))
+  println(report.prompt)
+  println("Citations: \{report.citations.length()}")
+  for citation in report.citations {
+    println("  [\{citation.number}] \{citation.doc_id}")
+  }
 }

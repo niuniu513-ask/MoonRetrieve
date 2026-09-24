@@ -4,7 +4,7 @@
 /// 用法：
 ///   moon run cmd/main -- index <文件或目录> [输出.json]
 ///   moon run cmd/main -- query <索引.json> "<查询>" [-k N]
-///   moon run cmd/main -- context <索引.json> "<查询>" [-k N]
+///   moon run cmd/main -- context <索引.json> "<查询>" [-k N] [--tokens N] [--diverse] [--json]
 ///   moon run cmd/main -- stats <索引.json>
 ///   moon run cmd/main -- phrase <索引.json> "<短语>" [-k N]
 ///   moon run cmd/main -- boolean <索引.json> "<表达式>" [-k N]
@@ -66,7 +66,9 @@ fn usage() -> Unit {
     "  index <path> [output.json]        建索引（支持 .md/.txt 文件或目录）",
   )
   println("  query <index.json> \"<query>\" [-k N] [--highlight]   检索")
-  println("  context <index.json> \"<query>\" [-k N] 生成 LLM 上下文")
+  println(
+    "  context <index.json> \"<query>\" [-k N] [--tokens N] [--diverse] [--json] 生成上下文",
+  )
   println("  stats <index.json>                      索引统计")
   println("  phrase <index.json> \"<phrase>\" [-k N]  短语检索")
   println(
@@ -235,10 +237,18 @@ async fn run_context(args : Array[String]) -> Unit {
   let json_path = args[2]
   let query = args[3]
   let top_k = parse_top_k(args, 5)
+  let max_tokens = parse_option(args, "--tokens", 800)
   let engine = load_engine(json_path)
-  let results = engine.search(query, top_k~)
-  let cb = @lib.ContextBuilder::new(max_tokens=800)
-  println(cb.build(query, results))
+  let report = if args.contains("--diverse") {
+    engine.build_diverse_context_report(query, top_k~, max_tokens~)
+  } else {
+    engine.build_context_report(query, top_k~, max_tokens~)
+  }
+  if args.contains("--json") {
+    println(@json.to_json(report).stringify())
+  } else {
+    println(report.prompt)
+  }
 }
 
 ///|

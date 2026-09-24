@@ -36,6 +36,7 @@ jobs:
         run: |
           moon run cmd/main --target native -- index examples/notes smoke-index.json
           moon run cmd/main --target native -- query smoke-index.json "MoonBit" -k 3
+          moon run cmd/main --target native -- context smoke-index.json "MoonBit" -k 3 --tokens 200 --diverse --json | jq -e '.citations | length > 0'
           moon run cmd/main --target native -- stats smoke-index.json
       - name: Benchmark (native)
         if: matrix.target == 'native'

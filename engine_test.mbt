@@ -71,3 +71,23 @@ test "engine builds context from distinct source documents" {
   assert_true(context.contains("guide#"))
   assert_true(context.contains("faq#"))
 }
+
+///|
+test "engine returns cited RAG context" {
+  let e = @MoonRetrieve.Engine::new()
+  e.add_document("guide", "MoonBit retrieval runs locally.")
+  e.add_document("faq", "MoonBit supports RAG.")
+  let report = e.build_diverse_context_report(
+    "MoonBit",
+    top_k=2,
+    max_tokens=100,
+  )
+  assert_eq(report.citations.length(), 2)
+  assert_true(report.citations[0].doc_id.has_suffix("#0"))
+  assert_true(report.citations[1].doc_id.has_suffix("#0"))
+  assert_true(report.citations[0].doc_id != report.citations[1].doc_id)
+  assert_eq(
+    report.prompt,
+    e.build_diverse_context("MoonBit", top_k=2, max_tokens=100),
+  )
+}

@@ -129,9 +129,29 @@ pub struct ContextBuilder {
 } derive(ToJson, @json.FromJson)
 pub fn ContextBuilder::build(Self, String, Array[SearchResult]) -> String
 pub fn ContextBuilder::build_diverse(Self, String, Array[SearchResult], max_sources? : Int) -> String
+pub fn ContextBuilder::build_diverse_report(Self, String, Array[SearchResult], max_sources? : Int) -> ContextReport
+pub fn ContextBuilder::build_report(Self, String, Array[SearchResult]) -> ContextReport
 pub fn ContextBuilder::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
 pub fn ContextBuilder::new(max_tokens? : Int, tokenizer? : Tokenizer) -> Self
 pub fn ContextBuilder::to_json(Self) -> Json
+
+pub struct ContextCitation {
+  number : Int
+  doc_id : String
+  score : Double
+  text : String
+  estimated_tokens : Int
+} derive(ToJson)
+pub fn ContextCitation::to_json(Self) -> Json
+
+pub struct ContextReport {
+  prompt : String
+  citations : Array[ContextCitation]
+  used_content_tokens : Int
+  estimated_prompt_tokens : Int
+  skipped_results : Int
+} derive(ToJson)
+pub fn ContextReport::to_json(Self) -> Json
 
 pub struct Engine {
   chunker : Chunker
@@ -140,7 +160,9 @@ pub struct Engine {
 pub fn Engine::add_document(Self, String, String) -> Unit
 pub fn Engine::add_documents(Self, Array[(String, String)]) -> Unit
 pub fn Engine::build_context(Self, String, top_k? : Int, max_tokens? : Int) -> String
+pub fn Engine::build_context_report(Self, String, top_k? : Int, max_tokens? : Int) -> ContextReport
 pub fn Engine::build_diverse_context(Self, String, top_k? : Int, max_tokens? : Int) -> String
+pub fn Engine::build_diverse_context_report(Self, String, top_k? : Int, max_tokens? : Int) -> ContextReport
 pub fn Engine::count(Self) -> Int
 pub fn Engine::from_json(Json, @json.JsonPath) -> Self raise @json.JsonDecodeError
 pub fn Engine::highlight(Self, String, String) -> String

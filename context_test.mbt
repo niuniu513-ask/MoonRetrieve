@@ -39,3 +39,55 @@ test "diverse context keeps one chunk per source" {
   assert_false(context.contains("guide.md#1"))
   assert_true(context.contains("faq.md#0"))
 }
+
+///|
+test "context report skips oversized chunk and cites later result" {
+  let cb = @MoonRetrieve.ContextBuilder::new(max_tokens=1)
+  let results = [
+    @MoonRetrieve.SearchResult::new(
+      "long.md", 2.0, "moonbit retrieval benchmark",
+    ),
+    @MoonRetrieve.SearchResult::new("short.md", 1.0, "rag"),
+  ]
+  let report = cb.build_report("rag", results)
+  assert_eq(report.citations.length(), 1)
+  assert_eq(report.citations[0].number, 1)
+  assert_eq(report.citations[0].doc_id, "short.md")
+  assert_eq(report.citations[0].score, 1.0)
+  assert_eq(report.used_content_tokens, 1)
+  assert_eq(report.skipped_results, 1)
+  assert_true(report.estimated_prompt_tokens > report.used_content_tokens)
+  assert_true(report.prompt.contains("[1]（来源：short.md）"))
+  assert_false(report.prompt.contains("long.md"))
+  assert_eq(cb.build("rag", results), report.prompt)
+  let json = @json.to_json(report).stringify()
+  assert_true(json.contains("short.md"))
+  assert_true(json.contains("used_content_tokens"))
+}
+
+///|
+test "diverse report cites one chunk per source" {
+  let cb = @MoonRetrieve.ContextBuilder::new(max_tokens=10)
+  let results = [
+    @MoonRetrieve.SearchResult::new("guide.md#1", 2.0, "moonbit"),
+    @MoonRetrieve.SearchResult::new("guide.md#2", 1.0, "language"),
+    @MoonRetrieve.SearchResult::new("faq.md#0", 0.5, "retrieval"),
+  ]
+  let report = cb.build_diverse_report("moonbit", results, max_sources=2)
+  assert_eq(report.citations.length(), 2)
+  assert_eq(report.citations[0].doc_id, "guide.md#1")
+  assert_eq(report.citations[1].doc_id, "faq.md#0")
+  assert_eq(report.citations[1].number, 2)
+  assert_false(report.prompt.contains("guide.md#2"))
+  assert_eq(cb.build_diverse("moonbit", results, max_sources=2), report.prompt)
+}
+
+///|
+test "zero content budget yields no citations" {
+  let cb = @MoonRetrieve.ContextBuilder::new(max_tokens=0)
+  let results = [@MoonRetrieve.SearchResult::new("guide.md", 1.0, "moonbit")]
+  let report = cb.build_report("moonbit", results)
+  assert_true(report.citations.is_empty())
+  assert_eq(report.used_content_tokens, 0)
+  assert_eq(report.skipped_results, 1)
+}

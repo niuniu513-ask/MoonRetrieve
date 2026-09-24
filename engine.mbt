@@ -127,9 +127,20 @@ pub fn Engine::build_context(
   top_k? : Int = 10,
   max_tokens? : Int = 800,
 ) -> String {
+  self.build_context_report(query, top_k~, max_tokens~).prompt
+}
+
+///|
+/// Return the prompt and the exact chunks selected for citation.
+pub fn Engine::build_context_report(
+  self : Engine,
+  query : String,
+  top_k? : Int = 10,
+  max_tokens? : Int = 800,
+) -> ContextReport {
   let results = self.search(query, top_k~)
   let builder = ContextBuilder::new(max_tokens~)
-  builder.build(query, results)
+  builder.build_report(query, results)
 }
 
 ///|
@@ -140,10 +151,21 @@ pub fn Engine::build_diverse_context(
   top_k? : Int = 10,
   max_tokens? : Int = 800,
 ) -> String {
+  self.build_diverse_context_report(query, top_k~, max_tokens~).prompt
+}
+
+///|
+/// Build a citation report with at most one chunk from each source document.
+pub fn Engine::build_diverse_context_report(
+  self : Engine,
+  query : String,
+  top_k? : Int = 10,
+  max_tokens? : Int = 800,
+) -> ContextReport {
   let candidate_k = if top_k > 0 { top_k * 3 } else { 0 }
   let results = self.search(query, top_k=candidate_k)
   let builder = ContextBuilder::new(max_tokens~)
-  builder.build_diverse(query, results, max_sources=top_k)
+  builder.build_diverse_report(query, results, max_sources=top_k)
 }
 
 ///|
